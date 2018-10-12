@@ -1,0 +1,8 @@
+---- RelayLogicCtrl Matches (7 in 3 files) ----
+Relay.c (E:\vmware\New_Genie\baseos\USER) line 62 : void RelayLogicCtrl(UINT8 ucChannel,UINT8 ucEnable)
+RelayPulse_cb in Relay.c (E:\vmware\New_Genie\baseos\USER) :     RelayLogicCtrl(pulse->ucChl,FALSE);
+RelayPulse in Relay.c (E:\vmware\New_Genie\baseos\USER) :     RelayLogicCtrl(ucChannel,TRUE);
+RelayLogicTurnoffAll in Relay.c (E:\vmware\New_Genie\baseos\USER) :         RelayLogicCtrl(ucLoop,FALSE);
+RelayLogicTurnonAll in Relay.c (E:\vmware\New_Genie\baseos\USER) :         RelayLogicCtrl(ucLoop,TRUE);
+Relay.h (E:\vmware\New_Genie\baseos\USER) line 37 : void RelayLogicCtrl(UINT8 ucChannel,UINT8 ucEnable);
+ValveCtrl in valve.c (E:\vmware\New_Genie\baseos\USER) :     RelayLogicCtrl(gValve.aValves[ucChl].ucRelayIndex,gValve.aValves[ucChl].ucEnableLevel ? ucEnable : !ucEnable);
