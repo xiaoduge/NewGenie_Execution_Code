@@ -110,7 +110,49 @@ void ValveInit(void)
     
 }
 
+void ValveCtrl(uint8_t ucChl,uint8_t ucEnable)
+{
+    RelayLogicCtrl(gValve.aValves[ucChl].ucRelayIndex,gValve.aValves[ucChl].ucEnableLevel ? ucEnable : !ucEnable);
 
+    // active / deactive measurement
+    switch(gValve.aValves[ucChl].ucType)
+    {
+    case VALVE_TYPE_GENERAL_PUMP:
+    case VALVE_TYPE_RECTIFIER:    
+    case VALVE_TYPE_EDI: 
+        if (ucEnable)
+        {
+        }
+        else
+        {
+        }
+        break;
+    case VALVE_TYPE_PRESSURE_REGULATING_PUMP:
+        if (ucEnable)
+        {
+        }
+        else
+        {
+
+        }
+		printf("rpump %d,%d\r\n",ucChl,ucEnable);
+        break;
+    }
+
+    if (ucEnable)
+    {
+        Display.ausHoldRegs[HOLD_REGS_NAME_RPT1] |= 1 << ucChl;
+    }
+    else
+    {
+        Display.ausHoldRegs[HOLD_REGS_NAME_RPT1] &= ~(1 << ucChl);
+    }
+        
+}
+
+
+
+#if 0  
 void ValveCtrl(uint8_t ucChl,uint8_t ucEnable)
 {
     RelayLogicCtrl(gValve.aValves[ucChl].ucRelayIndex,gValve.aValves[ucChl].ucEnableLevel ? ucEnable : !ucEnable);
@@ -150,6 +192,7 @@ void ValveCtrl(uint8_t ucChl,uint8_t ucEnable)
     }
         
 }
+#endif
 
 uint8_t ValveGetStatus(uint8_t ucChl)
 {
