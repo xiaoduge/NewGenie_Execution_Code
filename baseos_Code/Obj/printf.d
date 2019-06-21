@@ -1,8 +1,8 @@
 ..\obj\printf.o: Printf.c
-..\obj\printf.o: C:\Keil\ARM\ARMCC\bin\..\include\stdio.h
+..\obj\printf.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\printf.o: stm32f4xx.h
 ..\obj\printf.o: ..\CORE\core_cm4.h
-..\obj\printf.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\printf.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\printf.o: ..\CORE\core_cmInstr.h
 ..\obj\printf.o: ..\CORE\core_cmFunc.h
 ..\obj\printf.o: ..\CORE\core_cm4_simd.h

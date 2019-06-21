@@ -3,7 +3,7 @@
 ..\obj\zb.o: ..\USER\app_cfg.h
 ..\obj\zb.o: ..\USER\stm32f4xx.h
 ..\obj\zb.o: ..\CORE\core_cm4.h
-..\obj\zb.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\zb.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\zb.o: ..\CORE\core_cmInstr.h
 ..\obj\zb.o: ..\CORE\core_cmFunc.h
 ..\obj\zb.o: ..\CORE\core_cm4_simd.h
@@ -43,12 +43,12 @@
 ..\obj\zb.o: ..\uCOS-II\uC-LIB\lib_def.h
 ..\obj\zb.o: ..\uCOS-II\uC-LIB\lib_mem.h
 ..\obj\zb.o: ..\uCOS-II\uC-LIB\lib_str.h
-..\obj\zb.o: C:\Keil\ARM\ARMCC\bin\..\include\stdlib.h
-..\obj\zb.o: C:\Keil\ARM\ARMCC\bin\..\include\ctype.h
-..\obj\zb.o: C:\Keil\ARM\ARMCC\bin\..\include\errno.h
-..\obj\zb.o: C:\Keil\ARM\ARMCC\bin\..\include\limits.h
-..\obj\zb.o: C:\Keil\ARM\ARMCC\bin\..\include\stdio.h
-..\obj\zb.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
+..\obj\zb.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\obj\zb.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
+..\obj\zb.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\errno.h
+..\obj\zb.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+..\obj\zb.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\zb.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\zb.o: CanCmd.h
 ..\obj\zb.o: DtypeStm32.h
 ..\obj\zb.o: ..\Utilities\VOS\msg.h

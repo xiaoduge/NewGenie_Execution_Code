@@ -2,7 +2,7 @@
 ..\obj\adc.o: ..\BSP\stm32_eval.h
 ..\obj\adc.o: ..\USER\stm32f4xx.h
 ..\obj\adc.o: ..\CORE\core_cm4.h
-..\obj\adc.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\adc.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\adc.o: ..\CORE\core_cmInstr.h
 ..\obj\adc.o: ..\CORE\core_cmFunc.h
 ..\obj\adc.o: ..\CORE\core_cm4_simd.h

@@ -3,7 +3,7 @@
 ..\obj\dica.o: ..\USER\app_cfg.h
 ..\obj\dica.o: ..\USER\stm32f4xx.h
 ..\obj\dica.o: ..\CORE\core_cm4.h
-..\obj\dica.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\dica.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\dica.o: ..\CORE\core_cmInstr.h
 ..\obj\dica.o: ..\CORE\core_cmFunc.h
 ..\obj\dica.o: ..\CORE\core_cm4_simd.h
@@ -38,7 +38,7 @@
 ..\obj\dica.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
 ..\obj\dica.o: ..\USER\os_cfg.h
 ..\obj\dica.o: ..\uCOS-II\Ports\os_cpu.h
-..\obj\dica.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
+..\obj\dica.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\dica.o: ..\BSP\stm32_eval.h
 ..\obj\dica.o: ..\Utilities\VOS\gpio.h
 ..\obj\dica.o: ..\Utilities\VOS\voslog.h

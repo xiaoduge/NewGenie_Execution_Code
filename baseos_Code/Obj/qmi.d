@@ -3,7 +3,7 @@
 ..\obj\qmi.o: ..\USER\app_cfg.h
 ..\obj\qmi.o: ..\USER\stm32f4xx.h
 ..\obj\qmi.o: ..\CORE\core_cm4.h
-..\obj\qmi.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\qmi.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\qmi.o: ..\CORE\core_cmInstr.h
 ..\obj\qmi.o: ..\CORE\core_cmFunc.h
 ..\obj\qmi.o: ..\CORE\core_cm4_simd.h
@@ -38,7 +38,7 @@
 ..\obj\qmi.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
 ..\obj\qmi.o: ..\USER\os_cfg.h
 ..\obj\qmi.o: ..\uCOS-II\Ports\os_cpu.h
-..\obj\qmi.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
+..\obj\qmi.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\qmi.o: ..\Utilities\VOS\memory.h
 ..\obj\qmi.o: ..\Utilities\VOS\DtypeStm32.h
 ..\obj\qmi.o: ..\Utilities\VOS\task.h

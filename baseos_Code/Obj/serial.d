@@ -3,7 +3,7 @@
 ..\obj\serial.o: ..\USER\app_cfg.h
 ..\obj\serial.o: ..\USER\stm32f4xx.h
 ..\obj\serial.o: ..\CORE\core_cm4.h
-..\obj\serial.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\serial.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\serial.o: ..\CORE\core_cmInstr.h
 ..\obj\serial.o: ..\CORE\core_cmFunc.h
 ..\obj\serial.o: ..\CORE\core_cm4_simd.h
@@ -38,7 +38,7 @@
 ..\obj\serial.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
 ..\obj\serial.o: ..\USER\os_cfg.h
 ..\obj\serial.o: ..\uCOS-II\Ports\os_cpu.h
-..\obj\serial.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
+..\obj\serial.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\serial.o: ..\BSP\common.h
 ..\obj\serial.o: ..\BSP\hal_types.h
 ..\obj\serial.o: ..\BSP\osal_snv.h

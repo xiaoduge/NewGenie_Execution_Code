@@ -1,12 +1,12 @@
 ..\obj\ad840x.o: ad840x.c
-..\obj\ad840x.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
-..\obj\ad840x.o: C:\Keil\ARM\ARMCC\bin\..\include\stdio.h
-..\obj\ad840x.o: C:\Keil\ARM\ARMCC\bin\..\include\stdlib.h
+..\obj\ad840x.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\obj\ad840x.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\ad840x.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\ad840x.o: ad840x.h
 ..\obj\ad840x.o: ..\BSP\stm32_eval.h
 ..\obj\ad840x.o: ..\USER\stm32f4xx.h
 ..\obj\ad840x.o: ..\CORE\core_cm4.h
-..\obj\ad840x.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\ad840x.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\ad840x.o: ..\CORE\core_cmInstr.h
 ..\obj\ad840x.o: ..\CORE\core_cmFunc.h
 ..\obj\ad840x.o: ..\CORE\core_cm4_simd.h

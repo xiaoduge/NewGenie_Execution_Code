@@ -135,7 +135,7 @@ void ValveCtrl(uint8_t ucChl,uint8_t ucEnable)
         {
 
         }
-		printf("rpump %d,%d\r\n",ucChl,ucEnable);
+		//printf("rpump %d,%d\r\n",ucChl,ucEnable);
         break;
     }
 

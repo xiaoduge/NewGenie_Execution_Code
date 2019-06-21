@@ -3,7 +3,7 @@
 ..\obj\uartcmd.o: ..\USER\app_cfg.h
 ..\obj\uartcmd.o: ..\USER\stm32f4xx.h
 ..\obj\uartcmd.o: ..\CORE\core_cm4.h
-..\obj\uartcmd.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\uartcmd.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\uartcmd.o: ..\CORE\core_cmInstr.h
 ..\obj\uartcmd.o: ..\CORE\core_cmFunc.h
 ..\obj\uartcmd.o: ..\CORE\core_cm4_simd.h
@@ -38,8 +38,8 @@
 ..\obj\uartcmd.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
 ..\obj\uartcmd.o: ..\USER\os_cfg.h
 ..\obj\uartcmd.o: ..\uCOS-II\Ports\os_cpu.h
-..\obj\uartcmd.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
-..\obj\uartcmd.o: C:\Keil\ARM\ARMCC\bin\..\include\stdarg.h
+..\obj\uartcmd.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\obj\uartcmd.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 ..\obj\uartcmd.o: ..\BSP\stm32_eval.h
 ..\obj\uartcmd.o: ..\Utilities\VOS\gpio.h
 ..\obj\uartcmd.o: ..\Utilities\VOS\voslog.h

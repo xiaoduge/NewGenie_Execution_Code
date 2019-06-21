@@ -6,7 +6,7 @@
 ..\obj\beep.o: ..\USER\app_cfg.h
 ..\obj\beep.o: ..\USER\stm32f4xx.h
 ..\obj\beep.o: ..\CORE\core_cm4.h
-..\obj\beep.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\beep.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\beep.o: ..\CORE\core_cmInstr.h
 ..\obj\beep.o: ..\CORE\core_cmFunc.h
 ..\obj\beep.o: ..\CORE\core_cm4_simd.h

@@ -426,10 +426,30 @@ void Disp_SecondTask(void)
 
     Disp_PmReport();
 
+	//2019.01.07
+	Disp_FmReport(); 
+	switch((sSeconds % 2))
+    {
+    case 0:
+        Disp_EcoReport();
+        break;
+    case 1:
+        Disp_RectReport();
+   
+        Disp_GPumpReport();
+   
+        Disp_RPumpReport();
+   
+        Disp_EDIReport();        
+        break;
+    }
+	//end
+/*  
+	//2019.1.7
     switch((sSeconds % 3))
     {
     case 0:
-        Disp_FmReport();
+        Disp_FmReport(); //2019.01.07
         break;
     case 1:
         Disp_EcoReport();
@@ -444,7 +464,7 @@ void Disp_SecondTask(void)
         Disp_EDIReport();        
         break;
     }
-
+*/
     if (Display.bit1PendingDinRpt)
     {
         Disp_DinReport(Display.ucState);
@@ -1102,6 +1122,12 @@ void Disp_AddTocMeasurement(float fToc,uint16_t usTemp)
     Display.aTocData[Display.ucTocIdx].fToc = fToc;
     Display.aTocData[Display.ucTocIdx].usTemp = usTemp;
     Display.ucTocIdx = (Display.ucTocIdx + 1 ) % DISP_TOC_SAMPLES;
+
+    if(APP_PACKET_EXE_TOC_STAGE_OXDIZATION == Display.ucTocStage)
+    {
+	    printf("TOC Value: %f \r\n", fToc);
+	}
+	
     if (Display.ucTocNum < DISP_TOC_SAMPLES)
     {
         Display.ucTocNum++;
@@ -1109,6 +1135,8 @@ void Disp_AddTocMeasurement(float fToc,uint16_t usTemp)
 
     if (APP_PACKET_EXE_TOC_STAGE_FLUSH2 == Display.ucTocStage)
     {
+    	printf("TOC Flush2 Value: %f \r\n", fToc);
+		
         if (Display.ucTocNum >= DISP_TOC_SAMPLES)
         {
             appQmi_I4set(FALSE);

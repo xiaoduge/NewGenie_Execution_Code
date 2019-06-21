@@ -1,12 +1,12 @@
 ..\obj\at.o: AT.C
-..\obj\at.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
-..\obj\at.o: C:\Keil\ARM\ARMCC\bin\..\include\ctype.h
-..\obj\at.o: C:\Keil\ARM\ARMCC\bin\..\include\stdlib.h
-..\obj\at.o: C:\Keil\ARM\ARMCC\bin\..\include\stdio.h
+..\obj\at.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\obj\at.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
+..\obj\at.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\obj\at.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\at.o: ..\BSP\stm32_eval.h
 ..\obj\at.o: ..\USER\stm32f4xx.h
 ..\obj\at.o: ..\CORE\core_cm4.h
-..\obj\at.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\at.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\at.o: ..\CORE\core_cmInstr.h
 ..\obj\at.o: ..\CORE\core_cmFunc.h
 ..\obj\at.o: ..\CORE\core_cm4_simd.h

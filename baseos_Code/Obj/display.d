@@ -3,7 +3,7 @@
 ..\obj\display.o: ..\BSP\stm32_eval.h
 ..\obj\display.o: ..\USER\stm32f4xx.h
 ..\obj\display.o: ..\CORE\core_cm4.h
-..\obj\display.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\display.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\display.o: ..\CORE\core_cmInstr.h
 ..\obj\display.o: ..\CORE\core_cmFunc.h
 ..\obj\display.o: ..\CORE\core_cm4_simd.h
@@ -56,10 +56,10 @@
 ..\obj\display.o: cminterface.h
 ..\obj\display.o: ..\Utilities\VOS\system_time.h 
 ..\obj\display.o: Relay.h
-..\obj\display.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
-..\obj\display.o: C:\Keil\ARM\ARMCC\bin\..\include\stdio.h
-..\obj\display.o: C:\Keil\ARM\ARMCC\bin\..\include\math.h
-..\obj\display.o: C:\Keil\ARM\ARMCC\bin\..\include\stdlib.h
+..\obj\display.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\obj\display.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\display.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+..\obj\display.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\display.o: ..\BSP\RTC_Driver.h
 ..\obj\display.o: ..\Utilities\VOS\keyboard.h
 ..\obj\display.o: ..\Utilities\VOS\task.h

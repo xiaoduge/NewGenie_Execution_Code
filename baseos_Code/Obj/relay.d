@@ -3,7 +3,7 @@
 ..\obj\relay.o: ..\BSP\stm32_eval.h
 ..\obj\relay.o: ..\USER\stm32f4xx.h
 ..\obj\relay.o: ..\CORE\core_cm4.h
-..\obj\relay.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\obj\relay.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 ..\obj\relay.o: ..\CORE\core_cmInstr.h
 ..\obj\relay.o: ..\CORE\core_cmFunc.h
 ..\obj\relay.o: ..\CORE\core_cm4_simd.h
@@ -54,5 +54,5 @@
 ..\obj\relay.o: ..\BSP\common.h
 ..\obj\relay.o: DICA.h
 ..\obj\relay.o: cminterface.h
-..\obj\relay.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
+..\obj\relay.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\relay.o: ..\Utilities\VOS\system_time.h
