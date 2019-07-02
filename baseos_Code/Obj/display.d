@@ -79,3 +79,4 @@
 ..\obj\display.o: ad840x.h
 ..\obj\display.o: qmi.h
 ..\obj\display.o: Beep.h
+..\obj\display.o: tocData.h

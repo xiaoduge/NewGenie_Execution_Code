@@ -43,6 +43,8 @@
 
 #include "Beep.h"
 
+#include "tocData.h"
+
 #define FLOW1_PIN STM32F103_GPB(6)   
 #define FLOW2_PIN STM32F103_GPB(7)   
 #define FLOW3_PIN STM32F103_GPB(8)   
@@ -1084,7 +1086,7 @@ void Disp_CalcTocBPhase(void)
     Display.fB = (1+(25-(Display.aTocData[iIdx].usTemp / 10))*0.03)*fTotal;
 }
 
-
+#if 0
 void Disp_CalcTocPPhase(void)
 {
     float fTotal = 0;
@@ -1125,19 +1127,20 @@ void Disp_AddTocMeasurement(float fToc,uint16_t usTemp)
 
     if(APP_PACKET_EXE_TOC_STAGE_OXDIZATION == Display.ucTocStage)
     {
-	    printf("TOC Value: %f \r\n", fToc);
+	    printf("TO: %f \r\n", fToc);
 	}
 	
-    if (Display.ucTocNum < DISP_TOC_SAMPLES)
+    //if (Display.ucTocNum < DISP_TOC_SAMPLES)
     {
         Display.ucTocNum++;
     }
 
     if (APP_PACKET_EXE_TOC_STAGE_FLUSH2 == Display.ucTocStage)
     {
-    	printf("TOC Flush2 Value: %f \r\n", fToc);
+    	printf("TF: %f \r\n", fToc);
 		
-        if (Display.ucTocNum >= DISP_TOC_SAMPLES)
+        //if (Display.ucTocNum >= DISP_TOC_SAMPLES)
+        if(Display.ucTocNum >= 45)
         {
             appQmi_I4set(FALSE);
         
@@ -1145,6 +1148,53 @@ void Disp_AddTocMeasurement(float fToc,uint16_t usTemp)
 
             Disp_TOCReport();
         }
+    }
+    
+    //Disp_TOCReport();
+}
+
+#endif
+
+void Disp_AddTocMeasurement(float value,uint16_t usTemp)
+{
+	static TocValues tocValues;
+	static int isInit;
+	static int samplesNum;
+
+
+    if(APP_PACKET_EXE_TOC_STAGE_OXDIZATION == Display.ucTocStage)
+    {
+        isInit = 1;
+		samplesNum = 0;
+	    printf("TO: %f \r\n", value);
+	}
+
+    if (APP_PACKET_EXE_TOC_STAGE_FLUSH2 == Display.ucTocStage)
+    {
+		printf("TF: %f \r\n", value);		
+		
+		if(isInit && (samplesNum < D_SAMPLESNUM))
+		{
+			addTocValue(&tocValues, value);
+			samplesNum++;
+		}
+		
+		if(samplesNum == D_SAMPLESNUM)
+		{
+			double tempValue = tocValues.value;
+            printf("TOC Value: %f  \n", tempValue);	
+            
+            appQmi_I4set(FALSE);
+            Display.fP = tempValue;
+            Display.fB = 0;
+            Disp_TOCReport();
+            
+			memset(&tocValues, 0, sizeof(TocValues)); //計算完成后清零
+			isInit = 0;
+			samplesNum = 0;
+
+        }
+				      
     }
     
     //Disp_TOCReport();
@@ -1161,7 +1211,7 @@ void Disp_CanItfToc(APP_PACKET_EXE_TOC_REQ_STRU *pToc)
         break;
     case APP_PACKET_EXE_TOC_STAGE_FLUSH2:
         /* Calc Oxidization period */
-        Disp_CalcTocBPhase();
+        //Disp_CalcTocBPhase();
         break;
     default:
         break;

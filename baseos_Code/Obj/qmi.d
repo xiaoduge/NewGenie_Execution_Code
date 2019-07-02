@@ -39,6 +39,7 @@
 ..\obj\qmi.o: ..\USER\os_cfg.h
 ..\obj\qmi.o: ..\uCOS-II\Ports\os_cpu.h
 ..\obj\qmi.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\obj\qmi.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\qmi.o: ..\Utilities\VOS\memory.h
 ..\obj\qmi.o: ..\Utilities\VOS\DtypeStm32.h
 ..\obj\qmi.o: ..\Utilities\VOS\task.h

@@ -2,7 +2,7 @@
 
 #include    <string.h>
 
-
+#include <stdio.h>
 #include "memory.h"
 #include "task.h"
 #include "timer.h"
@@ -256,6 +256,8 @@ void Modbus_QmHandler(uint8_t *pData, uint8_t ucLen)
    Display.ausInputRegs[ucDataPtr + 1] = (pData[MODBUS_CONT_POS + 3] << 8) | (pData[MODBUS_CONT_POS + 4] << 0);
    Display.ausInputRegs[ucDataPtr + 2] = (pData[MODBUS_CONT_POS + 5] << 8) | (pData[MODBUS_CONT_POS + 6] << 0);
 
+  //printf("iChl: %d; \r\n", iChl);
+   
    if (ModbusSheduler.ucI4Speedup
     && (APP_EXE_I4_NO == iChl))
    {
@@ -331,16 +333,16 @@ void appQmi_ItfProcess(Message *pMsg)
         return; 
     }
     // check crc
-    usCrc = calcrc16((UINT8 *)pMsg->data,ucCnt);
+    usCrc = calcrc16(pModbus,ucCnt);
 
-    if (((usCrc >> 8 ) & 0xff) != pMsg->data[ucCnt]
-        || ((usCrc >> 0 ) & 0xff) != pMsg->data[ucCnt+1])
+    if (((usCrc >> 8 ) & 0xff) != pModbus[ucCnt]
+        || ((usCrc >> 0 ) & 0xff) != pModbus[ucCnt+1])
     {
-        VOS_LOG(VOS_LOG_DEBUG, "mitf crc fail %x,%x",usCrc,(pMsg->data[ucCnt]<<8)|pMsg->data[ucCnt+1]);
+        VOS_LOG(VOS_LOG_DEBUG, "mitf crc fail %x,%x",usCrc,(pModbus[ucCnt]<<8)|pModbus[ucCnt+1]);
         return;
     }
 
-    Modbus_MsgHandler((uint8_t *)pMsg->data,ucCnt);
+    Modbus_MsgHandler(pModbus,ucCnt);
 #else
    pMsg->data[0] = 0x55;
 
@@ -500,8 +502,6 @@ void Modbus_CommMove2Destination(void)
     }
 }
 
-
-
 void Modbus_Scheduler_msg_cb(void)
 {
     uint8_t ucIdx = 0;
@@ -572,6 +572,7 @@ void Modbus_Scheduler_msg_cb(void)
             ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_DELAY;
             ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = 100; // interval for modbus
             ucIdx++;
+
         }
     
     }
@@ -582,6 +583,88 @@ void Modbus_Scheduler_msg_cb(void)
 }
 
 
+#if 0
+void Modbus_Scheduler_msg_cb(void)
+{
+    uint8_t ucIdx = 0;
+
+    system_untimeout(&ModbusSheduler.RunBufAction.to4ActionDelay);
+
+    system_untimeout(&ModbusSheduler.RunBufAction.to4State);
+
+    RunBuffActionInit(&ModbusSheduler.RunBufAction);
+
+    // fill action buffer & start
+    if (!ModbusSheduler.ucI4Speedup)
+    {
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_QUERY_QM;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = MODBUS_ADDRESS_MODULE_QM; // address
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para1      = 0x0003; // address
+        ucIdx++;
+    
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_DELAY;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = 20; // interval for modbus
+        ucIdx++;
+
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_QUERY_QM;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = MODBUS_ADDRESS_MODULE_QM + 1; // address
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para1      = 0x000e; // address
+        ucIdx++;
+    
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_DELAY;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = 20; // interval for modbus
+        ucIdx++;
+
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_QUERY_QM;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = MODBUS_ADDRESS_MODULE_QM + 2; // address
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para1      = 0x0019; // address
+        ucIdx++;
+    
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_DELAY;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = 20; // interval for modbus
+        ucIdx++;
+
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_QUERY_QM;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = MODBUS_ADDRESS_MODULE_QM + 3; // address
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para1      = 0x0021; // address
+        ucIdx++;
+    
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_DELAY;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = 20; // interval for modbus
+        ucIdx++;
+
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_QUERY_QM;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = MODBUS_ADDRESS_MODULE_QM + 4; // address
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para1      = 0x002c; // address
+        ucIdx++;
+    
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_DELAY;
+        ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = 20; // interval for modbus
+        ucIdx++;
+    }
+    
+    else
+    {
+        int iLoop;
+        for (iLoop = 0; iLoop < 3; iLoop++)
+        {
+            ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_QUERY_QM;
+            ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = MODBUS_ADDRESS_MODULE_QM + 3; // address
+            ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para1      = 0x0021; // address
+            ucIdx++;
+            
+            ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_DELAY;
+            ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = 100; // interval for modbus
+            ucIdx++;
+        }
+    
+    }
+
+    ModbusSheduler.RunBufAction.ucActionCnt = ucIdx;
+
+    Modbus_CommMove2Destination();
+}
+#endif
 
 void Modbus_Scheduler_cb(void *para)
 {

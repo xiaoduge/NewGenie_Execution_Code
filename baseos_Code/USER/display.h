@@ -26,6 +26,7 @@ typedef enum
   HOLD_REGS_NAME_PUMP2,  
 }HOLD_REGS_NAME_ENUM;
 
+//2*2 + 4
 #define DISP_TOC_SAMPLES (APP_TOC_SAMPLES_PER_SECOND*2 + APP_TOC_FLUSH2_SAMPLES)
 
 typedef union                                        

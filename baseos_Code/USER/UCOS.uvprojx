@@ -471,6 +471,11 @@
               <FileType>1</FileType>
               <FilePath>.\zb.c</FilePath>
             </File>
+            <File>
+              <FileName>tocData.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\tocData.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
