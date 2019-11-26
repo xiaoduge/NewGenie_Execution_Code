@@ -1086,75 +1086,7 @@ void Disp_CalcTocBPhase(void)
     Display.fB = (1+(25-(Display.aTocData[iIdx].usTemp / 10))*0.03)*fTotal;
 }
 
-#if 0
-void Disp_CalcTocPPhase(void)
-{
-    float fTotal = 0;
-    int   iLoop;
-    int   iIdx;
-    
-    if (Display.ucTocNum < APP_TOC_FLUSH2_SAMPLES)
-    {
-        for (iLoop = 1; iLoop < Display.ucTocNum; iLoop++) //iLoop = 0 
-        {
-            fTotal += Display.aTocData[iLoop].fToc;
-        }
-        fTotal /= (Display.ucTocNum - 1);
-    }
-    else
-    {
-        for (iLoop = 1; iLoop < APP_TOC_FLUSH2_SAMPLES; iLoop++)//iLoop = 0
-        {
-            iIdx    = (Display.ucTocIdx + DISP_TOC_SAMPLES - 1 - iLoop) % DISP_TOC_SAMPLES;
-            fTotal += Display.aTocData[iIdx].fToc;
-        }
-
-        fTotal /= (APP_TOC_FLUSH2_SAMPLES - 1);
-    }
-
-    Display.fPRaw = fTotal;
-
-    iIdx    = (Display.ucTocIdx + DISP_TOC_SAMPLES - 1 - iLoop) % DISP_TOC_SAMPLES;
-	Display.fP = fTotal;
-//    Display.fB = (1+(25-(Display.aTocData[iIdx].usTemp / 10))*0.03)*(fTotal - Display.fBRaw);
-}
-
-void Disp_AddTocMeasurement(float fToc,uint16_t usTemp)
-{
-    Display.aTocData[Display.ucTocIdx].fToc = fToc;
-    Display.aTocData[Display.ucTocIdx].usTemp = usTemp;
-    Display.ucTocIdx = (Display.ucTocIdx + 1 ) % DISP_TOC_SAMPLES;
-
-    if(APP_PACKET_EXE_TOC_STAGE_OXDIZATION == Display.ucTocStage)
-    {
-	    printf("TO: %f \r\n", fToc);
-	}
-	
-    //if (Display.ucTocNum < DISP_TOC_SAMPLES)
-    {
-        Display.ucTocNum++;
-    }
-
-    if (APP_PACKET_EXE_TOC_STAGE_FLUSH2 == Display.ucTocStage)
-    {
-    	printf("TF: %f \r\n", fToc);
-		
-        //if (Display.ucTocNum >= DISP_TOC_SAMPLES)
-        if(Display.ucTocNum >= 45)
-        {
-            appQmi_I4set(FALSE);
-        
-            Disp_CalcTocPPhase();
-
-            Disp_TOCReport();
-        }
-    }
-    
-    //Disp_TOCReport();
-}
-
-#endif
-
+//2019.7.2 modify
 void Disp_AddTocMeasurement(float value,uint16_t usTemp)
 {
 	static TocValues tocValues;
@@ -1196,8 +1128,6 @@ void Disp_AddTocMeasurement(float value,uint16_t usTemp)
         }
 				      
     }
-    
-    //Disp_TOCReport();
 }
 
 void Disp_CanItfToc(APP_PACKET_EXE_TOC_REQ_STRU *pToc)
