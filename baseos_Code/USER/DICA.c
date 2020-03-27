@@ -192,7 +192,6 @@ BOOL Ioctrl_input_Keys_Get_Report( void)
     // XOR out repeating button presses
     Ioctrl_input_key_delta = (Ioctrl_input_current_state ^ Ioctrl_input_last_state) & INPUT_MASK;
 
-
     // Debounce buttons
     for ( i = 0; i < INPUT_NUMBER; ++i )
     {

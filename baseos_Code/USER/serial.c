@@ -29,7 +29,6 @@ SERIAL_STRU Serial[SERIAL_MAX_NUMBER];
 //const int Serial_Irq[SERIAL_MAX_NUMBER] = {EVAL_COM1_IRQn,EVAL_COM2_IRQn,EVAL_COM3_IRQn,EVAL_COM4_IRQn,EVAL_COM5_IRQn};
 //const COM_TypeDef Serial_Com[SERIAL_MAX_NUMBER] = {COM1,COM2,COM3,COM4,COM5};
 
-
 // SERIAL_CONFIG_STRU SerialConfig[SERIAL_MAX_NUMBER];
 
 const uint16_t Serial_DataBits[BAUD_DATA_BITS_NUM]  = {USART_WordLength_8b,USART_WordLength_9b};
@@ -225,6 +224,10 @@ UINT8  Serial_FillRcvBuf(UINT8 ucPort ,UINT8 *pData,UINT16 usLength)
         && (1 == usLength))
     {
         (Serial[ucPort].fcb)(ucPort,*pData);
+    }
+    if (Serial[ucPort].ccb)
+    {
+        Serial[ucPort].ccb(*pData);
     }
 
     return TRUE;
@@ -450,6 +453,35 @@ int Serial_Rcv_Empty(INT8U ucPort)
     return (Serial[ucPort].usRcvRear == Serial[ucPort].usRcvFront);
 }
 
+int Serial_Read(INT8U ucPort,char *data,INT8U length,INT16U tmout)
+{
+
+    if (MSG_DRIVER == Serial[ucPort].ucDriverType)
+    {
+        return 0;
+    }
+
+    if (0 == tmout 
+        || (!Serial_Rcv_Empty(ucPort)))
+    {
+        return Serial_MoveData(ucPort,data,length);        
+    }
+    {
+		INT8U err;
+        OSMboxPend(Serial[ucPort].mb,tmout,&err);
+
+        return Serial_MoveData(ucPort,data,length); 
+	}
+}
+
+
+void Serial_ReInit(UINT8 ucPort)
+{
+    USART_DeInit(Serial[ucPort].UsartDef);
+
+    SerialInitPort(ucPort);
+}
+
 /**
   * @brief  get serial driver mode.
   * @param  ucPort: Specifies the COM port to be configured.
@@ -461,6 +493,99 @@ int Serial_GetSndBufferSpace(UINT8 ucPort)
 {
     return (SERIAL_MAX_SEND_BUFF_LENGTH + Serial[ucPort].usSndRear - Serial[ucPort].usSndFront) % SERIAL_MAX_SEND_BUFF_LENGTH;
 }
+
+
+
+void USART_IRQCommHandler(int iPort)
+{
+ 
+    if(USART_GetITStatus(Serial[iPort].UsartDef, USART_IT_RXNE) != RESET)
+    {
+      UINT8 ucRcvData;
+      /* Read one byte from the receive data register */
+      ucRcvData = USART_ReceiveData(Serial[iPort].UsartDef);
+      Serial_FillRcvBuf(iPort,&ucRcvData,1);
+  
+    }
+
+    if(USART_GetITStatus(Serial[iPort].UsartDef, USART_IT_TXE) != RESET)
+    {   
+
+      if(SERIAL_EMPTY(Serial[iPort].usSndFront, Serial[iPort].usSndRear))
+      {
+        /* Disable the USART Transmit interrupt */
+        USART_ITConfig(Serial[iPort].UsartDef, USART_IT_TXE, DISABLE);
+
+      }
+      else
+      {
+          USART_SendData(Serial[iPort].UsartDef, Serial[iPort].SndBuff[Serial[iPort].usSndRear]);
+          Serial[iPort].usSndRear = (Serial[iPort].usSndRear + 1)%SERIAL_MAX_SEND_BUFF_LENGTH;
+
+          if (RS485 == Serial[iPort].ucPortType)
+          {
+              if(SERIAL_EMPTY(Serial[iPort].usSndFront, Serial[iPort].usSndRear))
+              {
+                 USART_ITConfig(Serial[iPort].UsartDef, USART_IT_TC, ENABLE);
+              }
+          }
+      }
+    }
+
+    
+    if (RS485 == Serial[iPort].ucPortType)
+    {
+        if (USART_GetITStatus(Serial[iPort].UsartDef, USART_IT_TC) != RESET)
+        {
+            if(SERIAL_EMPTY(Serial[iPort].usSndFront, Serial[iPort].usSndRear))
+            {
+               SerialEnableTx(iPort,FALSE); 
+               
+               USART_ITConfig(Serial[iPort].UsartDef, USART_IT_TC, DISABLE);
+            }
+        }
+    }
+    
+
+}
+
+void USART_StdioCommHandler(int iPort)
+{
+    if(USART_GetITStatus(Serial[iPort].UsartDef, USART_IT_RXNE) != RESET)
+    {
+      UINT8 ucRcvData;
+      /* Read one byte from the receive data register */
+      ucRcvData = USART_ReceiveData(Serial[iPort].UsartDef);
+      
+      Serial_FillRcvBuf(iPort,&ucRcvData,1);
+  
+    }
+    if(USART_GetITStatus(Serial[iPort].UsartDef,USART_IT_ORE) != RESET)
+    {
+       USART_ClearFlag(Serial[iPort].UsartDef,USART_FLAG_ORE);
+    }
+
+}
+
+
+void USART_CmdCommHandler(int iPort)
+{
+    if(USART_GetITStatus(Serial[iPort].UsartDef, USART_IT_RXNE) != RESET)
+    {
+      UINT8 ucRcvData;
+      /* Read one byte from the receive data register */
+      ucRcvData = USART_ReceiveData(Serial[iPort].UsartDef);
+      
+      Serial[iPort].ccb(ucRcvData);
+    }
+
+    if(USART_GetITStatus(Serial[iPort].UsartDef,USART_IT_ORE) != RESET)
+    {
+       USART_ClearFlag(Serial[iPort].UsartDef,USART_FLAG_ORE);
+    }
+    
+}
+
 
 #if (SERIAL_SUPPORT > 0)
 UINT8 PidSerialProcess(Message *pMsg)

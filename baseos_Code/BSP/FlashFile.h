@@ -1,6 +1,8 @@
 #ifndef _FLASH_FILE_H_
 #define _FLASH_FILE_H_
 
+#define FF_PAGE_NO (9)
+
 #define FF_MAX_FILE (3)
 
 typedef enum
@@ -10,6 +12,15 @@ typedef enum
     FF_TRUNC = 0X4     ,
     FF_NUM,
 }FF_ENUM;
+
+typedef enum
+{
+    FF_FILENO_CTRL_MAP  = 0,
+    FF_FILENO_TGT_MAP      ,    
+    FF_FILENO_SCENARIO     ,
+    FF_FILENO_NUM,
+}FF_FILENO_ENUM;
+
 
 
 typedef enum

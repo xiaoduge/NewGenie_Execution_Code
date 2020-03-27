@@ -112,7 +112,7 @@ typedef enum
    CAN_ADR_BUTT
 }CAN_ADR_TYPE_ENUM;
 
-#define CAN_MAX_RCV_BUFFER MAX_CAN_CCB_NUMBER
+#define CAN_MAX_RCV_BUFFER    8
 
 #define MAX_CAN_OUTPUT_BUFFER 8
 
@@ -148,7 +148,7 @@ int CanSndSappCmd2(uint8_t ucCcbIdx,uint16_t usDstCanAdr,uint16_t usSrcCanAdr,ui
 void CanSndSappDbg(uint16_t usDstCanAdr,uint8_t *data, uint8_t len);
 void CanCmdPrintf(uint16_t usDstCanAdr,const char* fmt,...);
 uint8_t CanCcbSndZigbeeIndMsg(void);
-uint8_t CanCcbAfProc(UINT8 ucCcbIndex);
+uint8_t CanCcbAfProc(UINT8 ucCcbIndex,uint8_t *sbRxBuf);
 void CanCcbSystemStartReportRegister(uint8_t ucTrxIndex);
 
 #endif

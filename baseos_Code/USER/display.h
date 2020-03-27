@@ -26,7 +26,6 @@ typedef enum
   HOLD_REGS_NAME_PUMP2,  
 }HOLD_REGS_NAME_ENUM;
 
-//2*2 + 4
 #define DISP_TOC_SAMPLES (APP_TOC_SAMPLES_PER_SECOND*2 + APP_TOC_FLUSH2_SAMPLES)
 
 typedef union                                        
@@ -47,6 +46,7 @@ typedef struct
     /* for exe */
 
     uint32_t bit1PendingDinRpt : 1;
+    uint32_t bit1PendingLeakRpt  : 1;
 
     uint8_t ucState;
 
@@ -72,6 +72,8 @@ typedef struct
 
     float fP;
     float fB;
+
+    int iLeakageState;
     
 }DISPLAY_STRU;
 
@@ -96,5 +98,6 @@ void Disp_DinStateChange(uint8 ucState);
 void Disp_CanItfToc(APP_PACKET_EXE_TOC_REQ_STRU *pToc);
 void Disp_AddTocMeasurement(float fToc,uint16_t usTemp);
 void Disp_zbResetInd(void);
+void Disp_LeakReportAck(uint8 ucState);
 
 #endif

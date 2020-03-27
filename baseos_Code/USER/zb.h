@@ -41,6 +41,6 @@ void zbSecondTask(void);
 
 void zbCanItf(uint8_t *pucData);
 
-void zb_SerialResp(void);
+void zb_SerialResp(uint8_t* sbTxBuf);
 
 #endif

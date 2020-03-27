@@ -11,20 +11,23 @@
 
 #include "common.h"
 
-#include "sapp.h"
+#include "sapp_ex.h"
 
 #include "serial_driver.h"
 
+#define UARTITF_SERIAL_PORT (SERIAL_PORT0)
+#define UARTITF_SERIAL_UART (USART1)
+#define UARTITF_SERIAL_IRQ  (USART1_IRQn)
 
-static int UcLogLevel = VOS_LOG_ERROR;
+static SAPP_PARSE_STRU sAppParse;
 
 
-void UartCmdCallback(uint8 port, uint8 event)
+void SerialCmd_Callback(uint8 port, uint8 event)
 {
   
   if (event & (HAL_UART_RX_FULL|HAL_UART_RX_ABOUT_FULL|HAL_UART_RX_TIMEOUT))
   {
-      SHZNAPP_SerialParse(0);
+      SHZNAPP_SerialParse(0,&sAppParse);
   }
 
   if (event & HAL_UART_TX_EMPTY)
@@ -53,39 +56,6 @@ UART_CMD_STRU UartCmdStru;
 
 void UartCmdInit(void)
 {
-#ifdef USE_USART1_STDIO
-
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    USART_InitTypeDef USART_InitStructure;
-
-    USART_InitStructure.USART_BaudRate   = 115200;
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-    USART_InitStructure.USART_StopBits   = USART_StopBits_1;
-    USART_InitStructure.USART_Parity     = USART_Parity_No;
-    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_InitStructure.USART_Mode       = USART_Mode_Rx | USART_Mode_Tx;
-    
-    STM_EVAL_COMInit(COM1, &USART_InitStructure);
-
-    /* Enable the USARTx Interrupt */
-    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-
-    // others are initialized in Printf
-    
-    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-
-#endif
-    // USART_ITConfig(USART2, USART_IT_TXE, ENABLE);
-    memset(&UartCmdStru,0,sizeof(UART_CMD_STRU));
-
-    UartCmdStru.cb = UartCmdCallback;
-
-	SHZNAPP_SerialInit();
 
 }
 
@@ -123,13 +93,11 @@ void UartCmdSerialWrite(uint8 ucCmd,uint8 *pBuffer, uint16 length)
 {
     if (length <= SAPP_MAX_SIZE)
     {
-        sbTxBuf[RPC_POS_LEN]  = length;
-        sbTxBuf[RPC_POS_CMD0] = RPC_SYS_APP;
-        sbTxBuf[RPC_POS_CMD1] = ucCmd;
+        pBuffer[RPC_POS_LEN]  = length;
+        pBuffer[RPC_POS_CMD0] = RPC_SYS_APP;
+        pBuffer[RPC_POS_CMD1] = ucCmd;
     
-        memcpy(&sbTxBuf[RPC_POS_DAT0],pBuffer, length);
-    
-        (void)SHZNAPP_SerialResp(sappItfPort);
+        (void)SHZNAPP_SerialResp(0,RPC_UART_SOF,pBuffer);
     }
 }
 
@@ -178,7 +146,68 @@ uint16_t HalUARTRead(uint8_t port, uint8_t *pBuffer, uint16_t length)
     default:
         return 0;
     }
+}
 
 
+void SerialCmd_config_cb(uint8_t ucPort)
+{
+    memset(&Serial[ucPort],0,offsetof(SERIAL_STRU,ucDriverType));
+
+    Serial[ucPort].ucDriverType = MSG_DRIVER;
+    Serial[ucPort].ucPortType   = RS232;
+    Serial[ucPort].ucPortCtrl   = 0; // DONT CARE FOR RS232
+    Serial[ucPort].iIrq         = UARTITF_SERIAL_IRQ;
+    Serial[ucPort].iComIdx      = UARTITF_SERIAL_PORT;
+    Serial[ucPort].ucPortMode   = UART_CMD;    
+    Serial[ucPort].UsartDef     = UARTITF_SERIAL_UART;
+        
+    Serial[ucPort].SerialConfig.BaundRate   = 115200; // FXIED setting
+    Serial[ucPort].SerialConfig.ucDataBits  = BAUD_DATA_8BITS; // FXIED setting
+    Serial[ucPort].SerialConfig.ucStopBits  = BAUD_STOP_1BITS; // FXIED setting
+    Serial[ucPort].SerialConfig.ucParity    = BAUD_PARITY_NO; // FXIED setting
+    Serial[ucPort].SerialConfig.ucIdleCheckThd = 20; // FXIED setting
+
+}
+
+void SerialCmd_RcvData(UINT8 ucData)
+{
+    UartCmdStru.UART_Rcvbuff[UartCmdStru.rcvfront++] = ucData;
+
+    if (UartCmdStru.cb) UartCmdStru.cb(0,HAL_UART_RX_TIMEOUT);
+
+}
+
+UINT8  SerialCmd_FillSndBuf(UINT8 *pData,UINT16 usLength)
+{
+    return Serial_FillSndBuf(UARTITF_SERIAL_PORT,pData,usLength);
+}
+
+void SerialCmd_Init(void)
+{
+    Serial[UARTITF_SERIAL_PORT].sccb = SerialCmd_config_cb;
+	
+    Serial[UARTITF_SERIAL_PORT].mcb  = NULL;
+
+    Serial[UARTITF_SERIAL_PORT].ccb  = SerialCmd_RcvData;
+
+	
+    SerialInitPort(UARTITF_SERIAL_PORT);
+
+    memset(&UartCmdStru,0,sizeof(UART_CMD_STRU));
+
+    UartCmdStru.cb = SerialCmd_Callback;
+    
+    SHZNAPP_ProtolInit();
+}
+
+
+void UartCmd_SetFilter(serial_filter_cb fcb)
+{
+    Serial[UARTITF_SERIAL_PORT].fcb = fcb;
+
+    /* override default mode */
+    //UartCmdStru.cb = NULL;
+
+    Serial[UARTITF_SERIAL_PORT].ucPortMode   = UART_STDIO;
 }
 

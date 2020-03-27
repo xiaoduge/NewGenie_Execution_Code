@@ -90,8 +90,6 @@
 #include "stm32f4xx_flash_ramfunc.h"
 #endif /* STM32F411xE */
 
-//#include "stm32f4xx_hal_conf.h"
-
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 

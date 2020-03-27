@@ -20,10 +20,12 @@
 #include "Beep.h"
 
  
-#include "sapp.h"
+#include "sapp_ex.h"
 #if (IWDG_SUPPORT > 0)
 #include "IWDG_Driver.h"
 #endif
+
+#include "mfddriver.h"
 
 
 
@@ -31,11 +33,11 @@ const char DataStr[]=__DATE__;
 const char TimeStr[]=__TIME__; 
 
 //const char version[] = {"STM32F103_PWEA_V1.0"};
-const char version[] = {"0.1.2.190702_93801"};
+const char version[] = {"1.0.0.200219_xxxxx"};
 
 uint16_t gusDeviceId;
 
-const char dtype[]   = {"SHLF0702"};
+const char dtype[]   = {"SHLFPWEB"};
 UINT8 Config_buff[1024];
 
 SERIALNO_CONFIG_STRU gSerialNoCfg;
@@ -63,18 +65,6 @@ uint8 Config_GetItem(uint16 id, uint16 len, void *buf)
     return ucStatus;
 }
 
-void Config_Sapp_Cmd(uint8_t cmd,uint8_t *data, uint8_t len)
-{
-    {
-        sbTxBuf[RPC_POS_LEN]  = len; // len for data area (NOT INCLUDE CMD0&CMD1&LEN itself)
-        sbTxBuf[RPC_POS_CMD0] = RPC_SYS_APP;
-        sbTxBuf[RPC_POS_CMD1] = cmd;
-        
-        memcpy(&sbTxBuf[RPC_POS_DAT0],data,len);
-
-        SHZNAPP_SerialResp(sappItfPort);
-    }
-}
 
 #define CONTENT_POS 2
 void Config_SaveSerialNo(UINT8 *pData)
@@ -92,29 +82,25 @@ int Config_GetSerialNo(uint8_t *pucSerial)
     return DEVICE_SERIAL_NO_SIZE;
 }
 
+int Config_SaveMmInfo(UINT8 *pData)
+{
+    int iRet = write_mfd(pData);
+
+    if (0 == iRet) 
+    {
+        mfd_Init(STM32F103_GPB(11),0);
+    }
+    return iRet;
+}
+
+int Config_GetMmInfo(UINT8 *pInData,UINT8 *pOutData)
+{
+	return read_mfd(pInData,pOutData);
+}
 
 void ConfigReset(void)
 {
     SCB->AIRCR = 0X05FA0004; 
-}
-
-
-/* |BLOCKLEN(2BYTES)|PATTERN LEN(1BYTE)|PATTERN|PORT(1BYTE)|TRIGTYPE(1BYTES)|RSPLEN(1BYTE)|RSPCONT|*/
-uint8 ConfigRs485Ctrl(uint8 *pCmd,uint8 CmdLen,uint8 *pRsp,uint8 *pucRspLen)
-{
-    UINT8 *pCanMsg = (UINT8 *)&pCmd[CONTENT_POS];
-
-    //UINT8 ucLen = CmdLen - 4; // uartcmd len
-
-    switch(pCanMsg[0])
-    {
-    case CMD_CMD_HOST2CLIENT_RS485_CTRL_SEND: // add an pattern
-        break;
-    default:
-        break;
-    }
-
-    return 0;
 }
 
 
@@ -126,14 +112,6 @@ uint8 Config_Entry(uint8 *pCmd,uint8 *pRsp,uint8 CmdLen,uint8 *pucRspLen)
 
     switch(pCmd[1])
     {
-#if 0   
-    case CMD_HOST2CLIENT_DEVICEID_SET:
-        ucRet = ConfigSetDeviceId(pCmd,CmdLen,pRsp,pucRspLen);
-        break;
-    case CMD_HOST2CLIENT_DEVICEID_GET:
-        ucRet = ConfigGetDeviceId(pCmd,CmdLen,pRsp,pucRspLen);
-        break;
-#endif      
     case CMD_HOST2CLIENT_BEEP:
         MainBeepWithDuration(1);
         break;
@@ -171,8 +149,7 @@ void Config_Init(void)
 
     if (ERROR_SUCCESS !=  Config_GetItem(APP_NV_SERIALNO_ID,DEVICE_SERIAL_NO_SIZE,gSerialNoCfg.aucSerialNo))
     {
-        //memcpy(gSerialNoCfg.aucSerialNo,"PWEA-XXXX",9); //EX_DCJ
-        memcpy(gSerialNoCfg.aucSerialNo,"PWEA123456",10);
+        memcpy(gSerialNoCfg.aucSerialNo,"PWEA-XXXX",9);
     }
 
     //printf("%d %d %d %d %d %d %d\r\n",gTslibLinearCfg.a[0],gTslibLinearCfg.a[1],gTslibLinearCfg.a[2],gTslibLinearCfg.a[3],gTslibLinearCfg.a[4],gTslibLinearCfg.a[5],gTslibLinearCfg.a[6]);

@@ -11,8 +11,8 @@ LR_IROM1 0x08000000 0x0004000  {    ; load region size_region
   }
 }
 
-LR_IROM2 0x0800C000 0x00100000  {    ; load region size_region
-  ER_IROM2 0x0800C000 0x00100000  {  ; load address = execution address
+LR_IROM2 0x0800C000 0x000F4000  {    ; load region size_region
+  ER_IROM2 0x0800C000 0x000F4000  {  ; load address = execution address
    *(InRoot$$Sections)
    .ANY (+RO)
   }

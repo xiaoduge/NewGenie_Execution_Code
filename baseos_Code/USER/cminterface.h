@@ -372,7 +372,8 @@ typedef enum
     APP_PACKET_RPT_RPUMP  ,      
     APP_PACKET_RPT_RECT   ,      
     APP_PACKET_RPT_EDI    ,       
-    APP_PACKET_RPT_TOC,
+    APP_PACKET_RPT_TOC    ,
+    APP_PACKET_RPT_LEAK   ,
         
 }APP_PACKET_RPT_EXE_BOARD_TYPE;
 
@@ -661,7 +662,7 @@ typedef struct
      APP_PACKET_ONLINE_NOTI_IND_FM_STRU  fm;
 }APP_PACKET_ONLINE_NOTI_IND_EXE_COMBINED_STRU;
 
-
+typedef APP_PACKET_RPT_DIN_STRU APP_PACKET_RPT_LEAK_STRU;
 
 typedef struct
 {

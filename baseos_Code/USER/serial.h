@@ -14,6 +14,7 @@ enum SERIAL_PORT_MODE_ENUM
 {
     UART_INT = 0,
     UART_STDIO,
+    UART_CMD,
 };
 
 
@@ -44,6 +45,7 @@ enum SERIAL_PORT_ENUM // refer COM_TypeDef
 typedef void (*serial_config_cb)(UINT8 ucPort);
 typedef void (*serial_msg_cb)(Message *msg);
 typedef void (*serial_filter_cb)(UINT8 ucPort,UINT8 data );
+typedef void (*serial_cmd_cb)( UINT8 data );
 
 typedef struct
 {
@@ -72,6 +74,7 @@ typedef struct
     serial_config_cb    sccb; // for serial config call back
     serial_msg_cb       mcb;
     serial_filter_cb    fcb;
+    serial_cmd_cb       ccb;
 
     OS_EVENT  *mb;   // VALID When Driver by IPC
 }SERIAL_STRU;
@@ -107,5 +110,8 @@ int Serial_Read(INT8U ucPort,char *data,INT8U length,INT16U tmout);
 int Serial_GetDrvMode(UINT8 ucPort);
 int Serial_GetSndBufferSpace(UINT8 ucPort);
 void Serial_TriggerIdleEvent(UINT8 ucPort);
+void USART_StdioCommHandler(int iPort);
+void USART_CmdCommHandler(int iPort);
+void USART_IRQCommHandler(int iPort);
 
 #endif

@@ -10,6 +10,7 @@
 "..\obj\uartcmd.o"
 "..\obj\cancmd.o"
 "..\obj\config.o"
+"..\obj\list.o"
 "..\obj\serial.o"
 "..\obj\display.o"
 "..\obj\valve.o"
@@ -37,6 +38,7 @@
 "..\obj\stm32f4xx_exti.o"
 "..\obj\stm32f4xx_sdio.o"
 "..\LIB\STM32F4xxlib.lib"
+"..\LIB\0860210008PWEAUSERLIB.lib"
 --library_type=microlib --strict --scatter "..\stm32f4xx_norm.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

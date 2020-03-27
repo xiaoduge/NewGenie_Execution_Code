@@ -2,7 +2,7 @@
 
 #include    <string.h>
 
-#include <stdio.h>
+
 #include "memory.h"
 #include "task.h"
 #include "timer.h"
@@ -217,24 +217,11 @@ void appQmi_config_cb(uint8_t ucPort)
 
     Serial[ucPort].ucDriverType = MSG_DRIVER;
     Serial[ucPort].ucPortType   = RS485;
-    Serial[ucPort].ucPortCtrl   = 0; // DONT CARE FOR RS232
 
-    switch(ucPort)
-    {
-    case SERIAL_PORT2:
-        Serial[ucPort].UsartDef = USART3;
-        Serial[ucPort].iIrq     = USART3_IRQn;
-        Serial[ucPort].iComIdx  = COM3;
-        Serial[ucPort].ucPortCtrl = STM32F103_GPG(0);
-        break;
-    case SERIAL_PORT5:
-        Serial[ucPort].UsartDef = USART6;
-        Serial[ucPort].iIrq     = USART6_IRQn;
-        Serial[ucPort].iComIdx  = COM6;
-        Serial[ucPort].ucPortCtrl = STM32F103_GPG(1);
-        break;
-        
-    }
+    Serial[ucPort].UsartDef     = USART3;
+    Serial[ucPort].iIrq         = USART3_IRQn;
+    Serial[ucPort].iComIdx      = COM3;
+    Serial[ucPort].ucPortCtrl   = STM32F103_GPG(0);
 
     Serial_RetriveConfig(ucPort);
 
@@ -256,8 +243,6 @@ void Modbus_QmHandler(uint8_t *pData, uint8_t ucLen)
    Display.ausInputRegs[ucDataPtr + 1] = (pData[MODBUS_CONT_POS + 3] << 8) | (pData[MODBUS_CONT_POS + 4] << 0);
    Display.ausInputRegs[ucDataPtr + 2] = (pData[MODBUS_CONT_POS + 5] << 8) | (pData[MODBUS_CONT_POS + 6] << 0);
 
-  //printf("iChl: %d; \r\n", iChl);
-   
    if (ModbusSheduler.ucI4Speedup
     && (APP_EXE_I4_NO == iChl))
    {
@@ -312,7 +297,6 @@ void appQmi_ItfProcess(Message *pMsg)
     UINT16  usCrc;
     UINT8   ucAdr;
     UINT8  *pModbus = (UINT8 *)pMsg->data;
-
 
     ucAdr = pModbus[MODBUS_ADR_POS];
 
@@ -427,11 +411,13 @@ void Modbus_CommStateTimeout_msg_cb(void)
     RUN_BUFFER_ACTION_STRU *ba = &ModbusSheduler.RunBufAction;
 
     //int ActionId = (int) (para);
+
     if ((ba->ucActionIdx >= 1) 
        && (NULL != ba->aActionBuf[ba->ucActionIdx-1].cb))
     {
         ba->aActionBuf[ba->ucActionIdx-1].cb(NULL);    
-    }    
+    }
+    
     Modbus_CommMove2Destination();
 
 }
@@ -457,7 +443,7 @@ void Modbus_Action4Qm(int modadr,int addr)
         aucModbus_buff[ucIdx++] = (6 >> 0) & 0xff; // reg numbers
     
         Modbus_MakeMessage(aucModbus_buff,ucIdx);   
-        appQmi_FillSndBuf(0,aucModbus_buff,ucIdx+2); // extra byte for RS485 
+        appQmi_FillSndBuf(aucModbus_buff,ucIdx+2); // extra byte for RS485 
     }
 
 
@@ -501,6 +487,8 @@ void Modbus_CommMove2Destination(void)
         return ;
     }
 }
+
+
 
 void Modbus_Scheduler_msg_cb(void)
 {
@@ -572,7 +560,6 @@ void Modbus_Scheduler_msg_cb(void)
             ModbusSheduler.RunBufAction.aActionBuf[ucIdx].ucActionId = MODBUS_TARGET_DELAY;
             ModbusSheduler.RunBufAction.aActionBuf[ucIdx].para       = 100; // interval for modbus
             ucIdx++;
-
         }
     
     }
@@ -581,6 +568,8 @@ void Modbus_Scheduler_msg_cb(void)
 
     Modbus_CommMove2Destination();
 }
+
+
 
 void Modbus_Scheduler_cb(void *para)
 {
@@ -598,26 +587,15 @@ void appQmiInit(void)
 
    SerialInitPort(ucPortIdx);   
 
-   ucPortIdx = SERIAL_PORT5;
-
-   Serial[ucPortIdx].sccb = appQmi_config_cb;
-
-   Serial[ucPortIdx].mcb  = appQmi_ItfProcess;
-
-   SerialInitPort(ucPortIdx);   
-
    memset(&ModbusSheduler,0,sizeof(MODBUS_SCHEDULE_STRU));
-   
    
    system_timeout(1000,SYS_TIMER_PERIOD,1000,Modbus_Scheduler_cb,NULL,&ModbusSheduler.to4Schedule); 
   
 }
 
-UINT8  appQmi_FillSndBuf(UINT8 ucPort,UINT8 *pData,UINT16 usLength)
+UINT8  appQmi_FillSndBuf(UINT8 *pData,UINT16 usLength)
 {
-    uint8_t aucPorts[2] = {SERIAL_PORT2,SERIAL_PORT5};
-    
-    return Serial_FillSndBuf(aucPorts[ucPort],pData,usLength);
+    return Serial_FillSndBuf(SERIAL_PORT2,pData,usLength);
 }
 void appQmi_I4set(uint8_t ucSpeedup)
 {

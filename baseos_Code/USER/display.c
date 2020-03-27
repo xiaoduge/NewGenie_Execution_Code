@@ -24,7 +24,7 @@
 
 #include "UartCmd.h"
 
-#include "Sapp.h"
+#include "sapp_ex.h"
 
 
 #include "hal_defs.h"
@@ -42,8 +42,8 @@
 #include "qmi.h"
 
 #include "Beep.h"
-
 #include "tocData.h"
+#include "leakage.h"
 
 #define FLOW1_PIN STM32F103_GPB(6)   
 #define FLOW2_PIN STM32F103_GPB(7)   
@@ -60,8 +60,9 @@ void Disp_EcoReport(void)
     uint8_t ucLoop;
     uint8_t ucPayLoad = 0;
     uint8_t ucRptFlag = FALSE;
+    uint8_t *buffer   = Config_buff;
 
-    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)Config_buff;
+    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1);
     APP_PACKET_RPT_ECO_STRU        *pFm  = (APP_PACKET_RPT_ECO_STRU *)pRpt->aucData;
 
     if (Display.ausHoldRegs[HOLD_REGS_NAME_RPT0] & APP_EXE_ECO_REPORT_MASK)
@@ -100,7 +101,7 @@ void Disp_EcoReport(void)
         pRpt->hdr.ucLen = ucPayLoad;
 
         // broadcast
-        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress,SAPP_CMD_DATA,(uint8_t *)pRpt,ucPayLoad + APP_PROTOL_HEADER_LEN); 
+        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
     }
 
 }
@@ -110,8 +111,9 @@ void Disp_PmReport(void)
     uint8_t ucLoop;
     uint8_t ucPayLoad = 0;
     uint8_t ucRptFlag = FALSE;
+    uint8_t *buffer   = Config_buff;
 
-    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)Config_buff;
+    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1);
     APP_PACKET_RPT_PM_STRU         *pPm  = (APP_PACKET_RPT_PM_STRU *)pRpt->aucData;
 
     if (Display.ausHoldRegs[HOLD_REGS_NAME_RPT0]  & APP_EXE_PM_REPORT_MASK)
@@ -141,7 +143,7 @@ void Disp_PmReport(void)
         }
         pRpt->hdr.ucLen = ucPayLoad;
 
-        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress,SAPP_CMD_DATA,(uint8_t *)pRpt,ucPayLoad + APP_PROTOL_HEADER_LEN); 
+        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
     }
 
 }
@@ -152,8 +154,9 @@ void Disp_RectReport(void)
     uint8_t ucLoop;
     uint8_t ucPayLoad = 0;
     uint8_t ucRptFlag = FALSE;
+    uint8_t *buffer   = Config_buff;
 
-    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)Config_buff;
+    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1);
     APP_PACKET_RPT_RECT_STRU         *pPm  = (APP_PACKET_RPT_RECT_STRU *)pRpt->aucData;
 
     if (Display.ausHoldRegs[HOLD_REGS_NAME_RPT1]  & APP_EXE_RECT_REPORT_MASK)
@@ -181,7 +184,7 @@ void Disp_RectReport(void)
         }
         pRpt->hdr.ucLen = ucPayLoad;
 
-        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress,SAPP_CMD_DATA,(uint8_t *)pRpt,ucPayLoad + APP_PROTOL_HEADER_LEN); 
+        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
     }
 
 }
@@ -192,8 +195,9 @@ void Disp_GPumpReport(void)
     uint8_t ucLoop;
     uint8_t ucPayLoad = 0;
     uint8_t ucRptFlag = FALSE;
+    uint8_t *buffer   = Config_buff;
 
-    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)Config_buff;
+    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1);
     APP_PACKET_RPT_GPUMP_STRU         *pPm  = (APP_PACKET_RPT_GPUMP_STRU *)pRpt->aucData;
 
     if (Display.ausHoldRegs[HOLD_REGS_NAME_RPT1]  & APP_EXE_GPUMP_REPORT_MASK)
@@ -221,7 +225,7 @@ void Disp_GPumpReport(void)
         }
         pRpt->hdr.ucLen = ucPayLoad;
 
-        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress,SAPP_CMD_DATA,(uint8_t *)pRpt,ucPayLoad + APP_PROTOL_HEADER_LEN); 
+        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
     }
 
 }
@@ -231,8 +235,9 @@ void Disp_RPumpReport(void)
     uint8_t ucLoop;
     uint8_t ucPayLoad = 0;
     uint8_t ucRptFlag = FALSE;
+    uint8_t *buffer   = Config_buff;
 
-    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)Config_buff;
+    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1);
     APP_PACKET_RPT_RPUMP_STRU      *pPm  = (APP_PACKET_RPT_RPUMP_STRU *)pRpt->aucData;
 
     if (Display.ausHoldRegs[HOLD_REGS_NAME_RPT1]  & APP_EXE_RPUMP_REPORT_MASK)
@@ -266,7 +271,7 @@ void Disp_RPumpReport(void)
         }
         pRpt->hdr.ucLen = ucPayLoad;
 
-        if (ucRptFlag ) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress ,SAPP_CMD_DATA,(uint8_t *)pRpt,ucPayLoad + APP_PROTOL_HEADER_LEN); 
+        if (ucRptFlag ) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress ,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
     }
 
 }
@@ -277,8 +282,9 @@ void Disp_EDIReport(void)
     uint8_t ucLoop;
     uint8_t ucPayLoad = 0;
     uint8_t ucRptFlag = FALSE;
+    uint8_t *buffer   = Config_buff;
 
-    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)Config_buff;
+    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1);
     APP_PACKET_RPT_EDI_STRU         *pPm  = (APP_PACKET_RPT_EDI_STRU *)pRpt->aucData;
 
     if (Display.ausHoldRegs[HOLD_REGS_NAME_RPT1]  & APP_EXE_EDI_REPORT_MASK)
@@ -304,7 +310,7 @@ void Disp_EDIReport(void)
         }
         pRpt->hdr.ucLen = ucPayLoad;
 
-        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress ,SAPP_CMD_DATA,(uint8_t *)pRpt,ucPayLoad + APP_PROTOL_HEADER_LEN); 
+        if (ucRptFlag) CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress ,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
     }
 
 }
@@ -312,8 +318,9 @@ void Disp_EDIReport(void)
 void Disp_DinReport(uint8 ucState)
 {
     uint8_t ucPayLoad = 0;
+    uint8_t *buffer   = Config_buff;
 
-    APP_PACKET_CLIENT_RPT_IND_STRU  *pRpt  = (APP_PACKET_CLIENT_RPT_IND_STRU *)Config_buff;
+    APP_PACKET_CLIENT_RPT_IND_STRU  *pRpt  = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1) ;
     APP_PACKET_RPT_DIN_STRU         *pDin  = (APP_PACKET_RPT_DIN_STRU *)pRpt->aucData;
 
     {
@@ -332,10 +339,38 @@ void Disp_DinReport(uint8 ucState)
 
         Display.bit1PendingDinRpt = TRUE;
 
-        CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress ,SAPP_CMD_DATA,(uint8_t *)pRpt,ucPayLoad + APP_PROTOL_HEADER_LEN); 
+        CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress ,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
     }
 
 }
+
+void Disp_LeakReport(uint8 ucState)
+{
+    uint8_t ucPayLoad = 0;
+    uint8_t *buffer   = Config_buff;
+
+    APP_PACKET_CLIENT_RPT_IND_STRU  *pRpt  = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1);
+    APP_PACKET_RPT_DIN_STRU         *pDin  = (APP_PACKET_RPT_DIN_STRU *)pRpt->aucData;
+
+    {
+        pRpt->hdr.ucMsgType = APP_PACKET_CLIENT_REPORT;
+        pRpt->hdr.ucDevType = APP_DEV_TYPE_EXE_BOARD;
+        pRpt->hdr.ucTransId = APP_DEV_TYPE_EXE_BOARD;
+        pRpt->ucRptType     = APP_PACKET_RPT_LEAK;
+        ucPayLoad++;
+
+        pDin->ucState = ucState;
+        ucPayLoad += sizeof(APP_PACKET_RPT_LEAK_STRU);
+        
+        pRpt->hdr.ucLen = ucPayLoad;
+
+        Display.bit1PendingLeakRpt = TRUE;
+
+        CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress ,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
+    }
+
+}
+
 
 void Disp_DinStateChange(uint8 ucState)
 {
@@ -367,11 +402,20 @@ void Disp_DinReportAck(uint8 ucState)
     //CanSndSappDbg(0,(uint8_t *)&ucState,1);
 }
 
+void Disp_LeakReportAck(uint8 ucState)
+{
+    if (Display.iLeakageState == ucState)
+    {
+        Display.bit1PendingLeakRpt = FALSE;
+    }
+}
+
 void Disp_TOCReport(void)
 {
     uint8_t ucPayLoad = 0;
+    uint8_t *buffer = Config_buff;
 
-    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)Config_buff;
+    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1);
     APP_PACKET_RPT_TOC_STRU        *pFm  = (APP_PACKET_RPT_TOC_STRU *)pRpt->aucData;
 
     pRpt->hdr.ucMsgType = APP_PACKET_CLIENT_REPORT;
@@ -386,15 +430,16 @@ void Disp_TOCReport(void)
 
     pRpt->hdr.ucLen = ucPayLoad;
 
-    CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress ,SAPP_CMD_DATA,(uint8_t *)pRpt,ucPayLoad + APP_PROTOL_HEADER_LEN); 
+    CanSndSappCmd2(CAN_LOCAL_EXE_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress ,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
 
 }
 void Disp_FmReport(void)
 {
     uint8_t ucLoop;
     uint8_t ucPayLoad = 0;
+    uint8_t *buffer   = Config_buff;
 
-    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)Config_buff;
+    APP_PACKET_CLIENT_RPT_IND_STRU *pRpt = (APP_PACKET_CLIENT_RPT_IND_STRU *)(buffer + RPC_FRAME_HDR_SZ + 1);
     APP_PACKET_RPT_FM_STRU         *pFm  = (APP_PACKET_RPT_FM_STRU *)pRpt->aucData;
 
     if (Display.ausHoldRegs_fm[0])
@@ -416,7 +461,7 @@ void Disp_FmReport(void)
         }
         pRpt->hdr.ucLen = ucPayLoad;
 
-        CanSndSappCmd2(CAN_LOCAL_FM_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress + 1,SAPP_CMD_DATA,(uint8_t *)pRpt,ucPayLoad + APP_PROTOL_HEADER_LEN); 
+        CanSndSappCmd2(CAN_LOCAL_FM_INDEX,APP_DEV_TYPE_MAIN_CTRL ,CanAddress + 1,SAPP_CMD_DATA,(uint8_t *)(buffer + 1),ucPayLoad + APP_PROTOL_HEADER_LEN); 
     }
 
 }
@@ -470,6 +515,21 @@ void Disp_SecondTask(void)
     if (Display.bit1PendingDinRpt)
     {
         Disp_DinReport(Display.ucState);
+    }
+
+    {
+    	//1表示漏水, 0表示正常
+        int iLeakageState = LeakageGetState();
+        if (iLeakageState != Display.iLeakageState
+            || Display.bit1PendingLeakRpt)
+        {
+        
+            Display.iLeakageState = iLeakageState;
+            
+            // report event;
+            Disp_LeakReport(iLeakageState);
+
+        }
     }
 }
 
@@ -1098,7 +1158,7 @@ void Disp_AddTocMeasurement(float value,uint16_t usTemp)
     {
         isInit = 1;
 		samplesNum = 0;
-	    printf("TO: %f \r\n", value);
+	    printf("TO: %f \r\n", value);
 	}
 
     if (APP_PACKET_EXE_TOC_STAGE_FLUSH2 == Display.ucTocStage)
@@ -1121,7 +1181,7 @@ void Disp_AddTocMeasurement(float value,uint16_t usTemp)
             Display.fB = 0;
             Disp_TOCReport();
             
-			memset(&tocValues, 0, sizeof(TocValues)); //Ӌ����ɺ�����
+			memset(&tocValues, 0, sizeof(TocValues)); //Ó‹ËãÍê³ÉºóÇåÁã
 			isInit = 0;
 			samplesNum = 0;
 
@@ -1207,6 +1267,9 @@ void Disp_Init(void)
     stm32_gpio_cfgpin(FLOW4_PIN,MAKE_PIN_CFG(GPIO_PuPd_NOPULL,GPIO_OType_PP,GPIO_Speed_50MHz,GPIO_Mode_IN)); 
     stm32_gpio_cfg_irq(FLOW4_PIN,EXTI_Trigger_Rising);
     InstallSensorHandler(DICA_SENSOR_EVENT_RISING,stm32_gpio_get_ext_line(FLOW4_PIN),FALSE,DICA_TYPE_PERIOD,FlowMeter4_sh,NULL);
+
+    LeakageInit(25);
+    LeakageSetup(1,50);
 
 }
 

@@ -99,7 +99,7 @@ typedef  void (*pFunction)(void);
 
 /* Compute the FLASH upload image size */  
 
-#define FLASH_IMAGE_SIZE                   (uint32) (FLASH_SIZE - ApplicationAddress)
+#define FLASH_IMAGE_SIZE                   (uint32) (FLASH_SIZE - (ApplicationAddress - HAL_FLASH_BEGIN))
 
 /* ------------------------------------------------------------------------------------------------
  *                                         Constants
@@ -111,18 +111,18 @@ typedef  void (*pFunction)(void);
 #define HAL_SBL_IMG_END                (uint32)(FLASH_SIZE/HAL_FLASH_WORD_SIZE)
 
 
-#define HAL_FLASH_ADR_SECTOR_0            ((u32)0x08000000) 	//扇区0起始地址, 16 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_1            ((u32)0x08004000) 	//扇区1起始地址, 16 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_2            ((u32)0x08008000) 	//扇区2起始地址, 16 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_3            ((u32)0x0800C000) 	//扇区3起始地址, 16 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_4            ((u32)0x08010000) 	//扇区4起始地址, 64 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_5            ((u32)0x08020000) 	//扇区5起始地址, 128 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_6            ((u32)0x08040000) 	//扇区6起始地址, 128 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_7            ((u32)0x08060000) 	//扇区7起始地址, 128 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_8            ((u32)0x08080000) 	//扇区8起始地址, 128 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_9            ((u32)0x080A0000) 	//扇区9起始地址, 128 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_10           ((u32)0x080C0000) 	//扇区10起始地址,128 Kbytes  
-#define HAL_FLASH_ADR_SECTOR_11           ((u32)0x080E0000) 	//扇区11起始地址,128 Kbytes  
+#define HAL_FLASH_ADR_SECTOR_0            ((u32)0x08000000) 	/* Base @ of Sector 0, 16 Kbytes */
+#define HAL_FLASH_ADR_SECTOR_1            ((u32)0x08004000) 	/* Base @ of Sector 1, 16 Kbytes */
+#define HAL_FLASH_ADR_SECTOR_2            ((u32)0x08008000) 	/* Base @ of Sector 2, 16 Kbytes */ 
+#define HAL_FLASH_ADR_SECTOR_3            ((u32)0x0800C000) 	/* Base @ of Sector 3, 16 Kbytes */
+#define HAL_FLASH_ADR_SECTOR_4            ((u32)0x08010000) 	/* Base @ of Sector 4, 64 Kbytes */  
+#define HAL_FLASH_ADR_SECTOR_5            ((u32)0x08020000) 	/* Base @ of Sector 5, 128 Kbytes */ 
+#define HAL_FLASH_ADR_SECTOR_6            ((u32)0x08040000) 	/* Base @ of Sector 6, 128 Kbytes */  
+#define HAL_FLASH_ADR_SECTOR_7            ((u32)0x08060000) 	/* Base @ of Sector 7, 128 Kbytes */
+#define HAL_FLASH_ADR_SECTOR_8            ((u32)0x08080000) 	/* Base @ of Sector 8, 128 Kbytes */
+#define HAL_FLASH_ADR_SECTOR_9            ((u32)0x080A0000) 	/* Base @ of Sector 9, 128 Kbytes */
+#define HAL_FLASH_ADR_SECTOR_10           ((u32)0x080C0000) 	/* Base @ of Sector 10, 128 Kbytes */
+#define HAL_FLASH_ADR_SECTOR_11           ((u32)0x080E0000) 	/* Base @ of Sector 11, 128 Kbytes */
 
 /* Base address of the Flash sectors Bank 2 */
 #define HAL_FLASH_ADR_SECTOR_12           ((u32)0x08100000) /* Base @ of Sector 0, 16 Kbytes */
@@ -155,6 +155,7 @@ typedef  void (*pFunction)(void);
 #define CAN_DST_ADDRESS(indenfier)((indenfier >> CAN_DST_ADDRESS_POS) & CAN_ADDRESS_MASK)
 
 #define CAN_BROAD_CAST_ADDRESS (0X3FF)
+
 
 #define CAN_BUILD_ADDRESS_IDENTIFIER(ulIdentifier,usSrcCanAdr,usDstCanAdr)(ulIdentifier=(usSrcCanAdr<<CAN_SRC_ADDRESS_POS)|(usDstCanAdr << CAN_DST_ADDRESS_POS)|CAN_EFF_FLAG)
 

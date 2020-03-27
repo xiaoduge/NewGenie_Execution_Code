@@ -107,17 +107,28 @@ typedef enum
 
 //#define DEBUG
 
+//#define JTAG_Debugger
 
-
+#ifndef JTAG_Debugger
 #define IWDG_SUPPORT 1 
-
+#else
+#define IWDG_SUPPORT 0 
+#endif
 #define RTC_SUPPORT  0
 
+#ifndef JTAG_Debugger
 #define ALARM_SUPPORT 1
+#else
+#define ALARM_SUPPORT 0
+#endif
 
 #define BEEP_SUPPORT 1
 
+#ifndef JTAG_Debugger
 #define RUN_SUPPORT 1
+#else
+#define RUN_SUPPORT 0
+#endif
 
 #define ADC_SUPPORT 1
 

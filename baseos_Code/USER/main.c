@@ -30,7 +30,7 @@
 
 #include "UartCmd.h"
 
-#include "sapp.h"
+#include "sapp_ex.h"
 
 #if (ADC_SUPPORT > 0)
 #include "adc.h"
@@ -48,7 +48,6 @@
 #include "RTC_Driver.h"
 #endif
 
-
 #include "ad840x.h"
 #include "adc.h"
 
@@ -63,13 +62,19 @@
 #include "valve.h"
 
 #include "display.h"
+#include "mfddriver.h"
+#include "leakage.h"
+
 
 
 uint32_t gulSecond;
 
+#if (RTC_SUPPORT > 0)
+tm gBootTimer;
+#endif
+
 
 STACK_ALIGN static OS_STK AppTaskMainStk[APP_TASK_MAIN_STK_SIZE];
-
 STACK_ALIGN static OS_STK AppTaskRootStk[APP_TASK_ROOT_STK_SIZE];
 
 void App_TaskIdleHook      (void)
@@ -88,6 +93,8 @@ void App_TimeTickHook(void)
 
     system_time_proc();
 
+    LeakageTickTask();
+
 #if (SERIAL_SUPPORT > 0)
     {
         UINT8 ucLoop;
@@ -103,9 +110,26 @@ void App_TimeTickHook(void)
 
 void InitKeys(void)
 {
-  
+#if 0
+    GPIO_KEY key;
+
+    key.gpio = STM32F103_GPC(6);
+    key.key = KEY_CODE_UP;
+    RegisterKey(&key);
+#endif    
 }
 
+
+
+
+void Main_SerialItfFilter(uint8_t ucPort,uint8_t ucData)
+{
+    /* command terminated by '\n' */
+    if ('\n' == ucData)
+    {
+       Serial_TriggerIdleEvent(ucPort);    
+    }
+}
 
 void  MainInit (void)
 {
@@ -116,7 +140,9 @@ void  MainInit (void)
 
    stm32_gpio_init();
 
-   UartCmdInit();
+   SerialCmd_Init();
+
+   UartCmd_SetFilter(Main_SerialItfFilter);
 
    osal_snv_init();
    
@@ -125,6 +151,9 @@ void  MainInit (void)
 #if (OS_TASK_STAT_EN > 0)
    OSStatInit();                                               /* Determine CPU capacity                                   */
 #endif
+
+   // DON'T remove following line!!
+   mfd_Init(STM32F103_GPB(11),0);
 
    InitRelays();  
 
@@ -156,7 +185,6 @@ void  MainInit (void)
 #endif
 
     CanCmdInit();
-
 
     appQmiInit();
 
@@ -208,7 +236,9 @@ void SecondTimer(void)
     RunToggle();
 
     CanCcbSecondTask();
+
     Disp_SecondTask();
+
 }
 
 
@@ -242,35 +272,40 @@ UINT8 PidTimerProcess(Message *pMsg)
     return 0;
 }
 
-
-
 UINT8 MainSappProc(Message *pMsg)
 {
     UINT8 ucRet = TRUE;
+    UINT8 aucBuffer[256];
+    uint8_t *sbRxBuf = (uint8_t *)pMsg->data;
+    uint8_t *sbTxBuf = aucBuffer + 1;
 
     MainAlarmWithDuration(1);               
-
-    sappItfType = Interface_RS232;
-    sappItfPort = pMsg->msgHead.MsgSeq;
     
     switch(sbRxBuf[RPC_POS_CMD0])
     {
     case RPC_SYS_APP:
-        ucRet = SHZNAPP_SerialAppProc();
+        ucRet = SHZNAPP_SerialAppProc(sbRxBuf,sbTxBuf);
         break;
     case RPC_SYS_BOOT:
-        ucRet = SHZNAPP_SerialBootProc();
+        ucRet = SHZNAPP_SerialBootProc(sbRxBuf,sbTxBuf);
         break;
     default:
-        ucRet = SHZNAPP_SerialUnknowProc();
+        ucRet = SHZNAPP_SerialUnknowProc(sbTxBuf);
         break;
     }
     if (ucRet )
     {
-        (void)SHZNAPP_SerialResp(sappItfPort);  // Send the SB response setup in the sbRxBuf passed to sblProc().
+        (void)SHZNAPP_SerialResp(pMsg->msgHead.MsgSeq,RPC_UART_SOF,sbTxBuf);  // Send the SB response setup in the sbRxBuf passed to sblProc().
     }
 
     return 0;
+}
+
+
+
+void Main_Cmd( char *cmd , int len)
+{
+    // intentional blank
 }
 
 
@@ -292,9 +327,16 @@ UINT8 Msg_proc(Message *pMsg)
 #endif 
 #if (SERIAL_SUPPORT > 0)
     case PID_RS485:
-        return PidSerialProcess(pMsg);
+        if (0 == pMsg->msgHead.nMsgType)
+        {
+            Main_Cmd(pMsg->data,pMsg->msgHead.nMsgLen);
+        }
+        else 
+        {
+            return PidSerialProcess(pMsg);
+        }
+        break;
 #endif        
-       
 #if (CAN_SUPPORT > 0)
     case PID_CAN:
         return PidCanProcess(pMsg);
@@ -363,12 +405,9 @@ int main(void)
 
     BSP_Init(); 
     
-
 	/* Set the Vector Table base location at 0x08000000 */
-
     NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0); 
-	
-
+    
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // ylf: 2bits for priority group 
 
     OSInit();                /* Initialize "uC/OS-II, The Real-Time Kernel"              */

@@ -5,7 +5,7 @@
 
 
 void   appQmiInit(void);
-UINT8  appQmi_FillSndBuf(UINT8 ucPort,UINT8 *pData,UINT16 usLength);
+UINT8  appQmi_FillSndBuf(UINT8 *pData,UINT16 usLength);
 void appQmi_msg_Handler(Message *Msg);
 void appQmi_I4set(uint8_t ucSpeedup);
 

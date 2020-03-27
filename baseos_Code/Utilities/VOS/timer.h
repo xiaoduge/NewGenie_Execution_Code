@@ -33,7 +33,6 @@ typedef struct
 
 
 void InitTimer(void);
-
 void AddTimer(UINT8 UsrId,UINT8 enType,UINT16 TimerLen,UINT16 Para);
 void RmvTimer(UINT8 UserId);
 void ModTimer(UINT8 UserId,UINT16 TimerLen,UINT16 usPara);

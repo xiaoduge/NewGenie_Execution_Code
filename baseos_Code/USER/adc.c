@@ -96,9 +96,9 @@ void TIM2_Configuration ( u32 Sampling_Period )
 {  
     int freq = 1000000/Sampling_Period;
 
-    TIM_Init_General(TIMER1,freq);
+    TIM_Init_General(TIMER2,freq);
 
-    TIM_InstallHandler(TIMER1,TIM_IT_Update,TIM2_Handler,NULL);
+    TIM_InstallHandler(TIMER2,TIM_IT_Update,TIM2_Handler,NULL);
 }  
 
 

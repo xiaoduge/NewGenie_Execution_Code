@@ -195,6 +195,8 @@ void Config_Init(void);
 
 int Config_GetSerialNo(uint8_t *pucSerial);
 void Config_SaveSerialNo(UINT8 *pData);
+int Config_SaveMmInfo(UINT8 *pData);
+int Config_GetMmInfo(UINT8 *pInData,UINT8 *pOutData);
 
 void ConfigReset(void);
 uint8 Config_Sapp_Entry(uint8 *pCmd,uint8 *pRsp,uint8 CmdLen,uint8 *pucRspLen);

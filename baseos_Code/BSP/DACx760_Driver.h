@@ -1,6 +1,8 @@
 #ifndef _DACx760_DRIVER_H_
 #define _DACx760_DRIVER_H_
 
+#include "hal_spi_driver.h"
+
 typedef enum
 {
     DACX760_WADDR_NOP           = 0X0,
@@ -48,6 +50,12 @@ void DACx7660_Set_DacData(uint8_t ucChl,uint32_t data);
 uint32_t DACx7660_Get_DacData(uint8_t ucChl);
 void DACx7660_Set_DacCtrl(uint8_t ucChl,uint32_t data);
 uint32_t DACx7660_Get_DacCtrl(uint8_t ucChl);
-void DACx7660_Init(void);
+
+/*
+* @brief  Initializes the spi bus based device.
+             
+           spi bus attributes:  SPI_CPOL_High,SPI_CPHA_2Edge
+*/
+void DACx7660_Init(struct spi_adpater *pSpi);
 
 #endif

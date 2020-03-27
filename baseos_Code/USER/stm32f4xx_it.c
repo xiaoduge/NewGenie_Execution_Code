@@ -204,107 +204,21 @@ void SysTick_Handler(void)
 
 }
 
-
-static void USART_IRQCommHandler(int iPort)
-{
- 
-    if(USART_GetITStatus(Serial[iPort].UsartDef, USART_IT_RXNE) != RESET)
-    {
-      UINT8 ucRcvData;
-      /* Read one byte from the receive data register */
-      ucRcvData = USART_ReceiveData(Serial[iPort].UsartDef);
-#if (SERIAL_SUPPORT > 0)
-      Serial_FillRcvBuf(iPort,&ucRcvData,1);
-#else
-      ucRcvData = ucRcvData;
-#endif
-  
-    }
-
-#if (SERIAL_SUPPORT > 0)
-    if(USART_GetITStatus(Serial[iPort].UsartDef, USART_IT_TXE) != RESET)
-    {   
-
-      if(SERIAL_EMPTY(Serial[iPort].usSndFront, Serial[iPort].usSndRear))
-      {
-        /* Disable the USART Transmit interrupt */
-        USART_ITConfig(Serial[iPort].UsartDef, USART_IT_TXE, DISABLE);
-
-      }
-      else
-      {
-          USART_SendData(Serial[iPort].UsartDef, Serial[iPort].SndBuff[Serial[iPort].usSndRear]);
-          Serial[iPort].usSndRear = (Serial[iPort].usSndRear + 1)%SERIAL_MAX_SEND_BUFF_LENGTH;
-
-          if (RS485 == Serial[iPort].ucPortType)
-          {
-              if(SERIAL_EMPTY(Serial[iPort].usSndFront, Serial[iPort].usSndRear))
-              {
-                 USART_ITConfig(Serial[iPort].UsartDef, USART_IT_TC, ENABLE);
-              }
-          }
-      }
-    }
-
-    
-    if (RS485 == Serial[iPort].ucPortType)
-    {
-        if (USART_GetITStatus(Serial[iPort].UsartDef, USART_IT_TC) != RESET)
-        {
-            if(SERIAL_EMPTY(Serial[iPort].usSndFront, Serial[iPort].usSndRear))
-            {
-               SerialEnableTx(iPort,FALSE); 
-               
-               USART_ITConfig(Serial[iPort].UsartDef, USART_IT_TC, DISABLE);
-            }
-        }
-    }
-    
-#endif      
-
-}
-
-static void USART_StdioCommHandler(int iPort)
-{
-    if(USART_GetITStatus(Serial[iPort].UsartDef, USART_IT_RXNE) != RESET)
-    {
-      UINT8 ucRcvData;
-      /* Read one byte from the receive data register */
-      ucRcvData = USART_ReceiveData(Serial[iPort].UsartDef);
-#if (SERIAL_SUPPORT > 0)
-      Serial_FillRcvBuf(iPort,&ucRcvData,1);
-#else
-      ucRcvData = ucRcvData;
-#endif
-  
-    }
-
-}
-
 void USART1_IRQHandler(void)
 {
-#ifdef USE_USART1_STDIO
-    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    switch(Serial[SERIAL_PORT0].ucPortMode)
     {
-      UINT8 ucRcvData;
-      /* Read one byte from the receive data register */
-      ucRcvData = USART_ReceiveData(USART1);
-      
-      {
-          UartCmdPutData(ucRcvData);        
-      }
-    }
-#else
-
-    if (UART_STDIO == Serial[SERIAL_PORT0].ucPortMode)
-    {
-        USART_StdioCommHandler(SERIAL_PORT0);
-    }
-    else
-    {
+    case UART_INT:
         USART_IRQCommHandler(SERIAL_PORT0);
+        break;
+    case UART_STDIO:
+        USART_StdioCommHandler(SERIAL_PORT0);
+        break;
+    case UART_CMD:
+        USART_CmdCommHandler(SERIAL_PORT0);
+        break;
     }
-#endif
+
 }
 
 /**
@@ -315,6 +229,7 @@ void USART1_IRQHandler(void)
 
 void USART2_IRQHandler(void)
 {
+#if (SERIAL_SUPPORT > 0)
     if (UART_STDIO == Serial[SERIAL_PORT1].ucPortMode)
     {
         USART_StdioCommHandler(SERIAL_PORT1);
@@ -323,6 +238,8 @@ void USART2_IRQHandler(void)
     {
         USART_IRQCommHandler(SERIAL_PORT1);
     }
+#endif  
+
 }
 
 /**
@@ -333,6 +250,7 @@ void USART2_IRQHandler(void)
   
 void USART3_IRQHandler(void)
 {
+#if (SERIAL_SUPPORT > 0)
     if (UART_STDIO == Serial[SERIAL_PORT2].ucPortMode)
     {
         USART_StdioCommHandler(SERIAL_PORT2);
@@ -341,34 +259,42 @@ void USART3_IRQHandler(void)
     {
         USART_IRQCommHandler(SERIAL_PORT2);
     }
+#endif  
+
 }
 
 void  UART4_IRQHandler(void)
 {
-    if (UART_STDIO == Serial[SERIAL_PORT3].ucPortMode)
-    {
-        USART_StdioCommHandler(SERIAL_PORT3);
-    }
-    else
-    {
-        USART_IRQCommHandler(SERIAL_PORT3);
-    }
+#if (SERIAL_SUPPORT > 0)
+        if (UART_STDIO == Serial[SERIAL_PORT3].ucPortMode)
+        {
+            USART_StdioCommHandler(SERIAL_PORT3);
+        }
+        else
+        {
+            USART_IRQCommHandler(SERIAL_PORT3);
+        }
+#endif  
 }
 
 void  UART5_IRQHandler(void)
 {
-    if (UART_STDIO == Serial[SERIAL_PORT4].ucPortMode)
-    {
-        USART_StdioCommHandler(SERIAL_PORT4);
-    }
-    else
-    {
-        USART_IRQCommHandler(SERIAL_PORT4);
-    }
+#if (SERIAL_SUPPORT > 0)
+        if (UART_STDIO == Serial[SERIAL_PORT4].ucPortMode)
+        {
+            USART_StdioCommHandler(SERIAL_PORT4);
+        }
+        else
+        {
+            USART_IRQCommHandler(SERIAL_PORT4);
+        }
+#endif  
+
 }
 
 void  USART6_IRQHandler(void)
 {
+#if (SERIAL_SUPPORT > 0)
     if (UART_STDIO == Serial[SERIAL_PORT5].ucPortMode)
     {
         USART_StdioCommHandler(SERIAL_PORT5);
@@ -377,6 +303,8 @@ void  USART6_IRQHandler(void)
     {
         USART_IRQCommHandler(SERIAL_PORT5);
     }
+#endif  
+
 }
 
 
@@ -390,7 +318,7 @@ void TIM1_CC_IRQHandler()
         capture = TIM_GetCapture1(TIM1);  
         TIM_SetCompare1(TIM1, capture + 1000);      
 
-        TIM_event_handler(TIMER4,TIM_IT_CC1);      
+        TIM_event_handler(TIMER1,TIM_IT_CC1);      
 
      }        
 
@@ -404,56 +332,27 @@ void TIM2_IRQHandler(void)
       TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 
       // User Add callback functions here
-      TIM_event_handler(TIMER1,TIM_IT_Update);      
+      TIM_event_handler(TIMER2,TIM_IT_Update);      
   }
 
   if (TIM_GetITStatus(TIM2, TIM_IT_CC1) != RESET)  
   {  
       TIM_ClearITPendingBit(TIM2, TIM_IT_CC1);  
-      TIM_event_handler(TIMER1,TIM_IT_CC1);      
+      TIM_event_handler(TIMER2,TIM_IT_CC1);      
   }  
   
   if (TIM_GetITStatus(TIM2, TIM_IT_CC2) != RESET)  
   {  
       TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);  
-      TIM_event_handler(TIMER1,TIM_IT_CC2);      
+      TIM_event_handler(TIMER2,TIM_IT_CC2);      
    } 
   
   if (TIM_GetITStatus(TIM2, TIM_IT_CC3) != RESET)  
   {  
       TIM_ClearITPendingBit(TIM2, TIM_IT_CC3);  
-      TIM_event_handler(TIMER1,TIM_IT_CC3);      
+      TIM_event_handler(TIMER2,TIM_IT_CC3);      
   } 
 
-}
-
-void TIM3_IRQHandler(void)
-{
-  if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)
-  {
-    TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-
-    TIM_event_handler(TIMER2,TIM_IT_Update);      
-  }
-
-   if (TIM_GetITStatus(TIM3, TIM_IT_CC1) != RESET)  
-   {  
-       TIM_ClearITPendingBit(TIM3, TIM_IT_CC1);  
-       TIM_event_handler(TIMER2,TIM_IT_CC1);      
-   }  
-   
-   if (TIM_GetITStatus(TIM3, TIM_IT_CC2) != RESET)  
-   {  
-       TIM_ClearITPendingBit(TIM3, TIM_IT_CC2);  
-       TIM_event_handler(TIMER2,TIM_IT_CC2);      
-   } 
-   
-   if (TIM_GetITStatus(TIM3, TIM_IT_CC3) != RESET)  
-   {  
-       TIM_ClearITPendingBit(TIM3, TIM_IT_CC3);  
-       TIM_event_handler(TIMER2,TIM_IT_CC3);      
-   } 
-  
 }
 
 void TIM4_IRQHandler(void)
@@ -463,26 +362,26 @@ void TIM4_IRQHandler(void)
   {
     TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
     
-    TIM_event_handler(TIMER3,TIM_IT_Update);      
+    TIM_event_handler(TIMER4,TIM_IT_Update);      
   }
   if (TIM_GetITStatus(TIM4, TIM_IT_CC1) != RESET)  
   {  
       TIM_ClearITPendingBit(TIM4, TIM_IT_CC1);  
-      TIM_event_handler(TIMER3,TIM_IT_CC1);      
+      TIM_event_handler(TIMER4,TIM_IT_CC1);      
   }  
   
   if (TIM_GetITStatus(TIM4, TIM_IT_CC2) != RESET)  
   {  
       TIM_ClearITPendingBit(TIM4, TIM_IT_CC2);  
       
-      TIM_event_handler(TIMER3,TIM_IT_CC2);      
+      TIM_event_handler(TIMER4,TIM_IT_CC2);      
   } 
   
   if (TIM_GetITStatus(TIM4, TIM_IT_CC3) != RESET)  
   {  
       TIM_ClearITPendingBit(TIM4, TIM_IT_CC3);  
       
-      TIM_event_handler(TIMER3,TIM_IT_CC3);      
+      TIM_event_handler(TIMER4,TIM_IT_CC3);      
   } 
   
 }

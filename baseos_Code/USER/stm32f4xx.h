@@ -120,11 +120,7 @@
   */           
 
 #if !defined  (HSE_VALUE) 
-#if defined(CCEA)
 #define HSE_VALUE    ((uint32_t)25000000) /*!< Value of the External oscillator in Hz (add shzn) */
-#else  
-#define HSE_VALUE    ((uint32_t)8000000) /*!< Value of the External oscillator in Hz */
-#endif  
 #endif /* HSE_VALUE */
 
 /**
@@ -9210,5 +9206,3 @@ typedef struct
   */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
-

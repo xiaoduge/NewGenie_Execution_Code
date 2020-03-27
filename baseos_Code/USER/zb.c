@@ -28,7 +28,7 @@
 
 #include "common.h"
 
-#include "sapp.h"
+#include "sapp_ex.h"
 
 #include "cminterface.h"
 
@@ -62,6 +62,7 @@ typedef struct
     unsigned char ucIndex;
     unsigned char ucMsgLen;
     unsigned char ucChecksum;
+    unsigned char ucDummy; // place hold
     unsigned char Data[MAX_SERAIL_MESSAGE_LEN];
 }SERIAL_BUS_PARSER;
 
@@ -79,6 +80,7 @@ static SERIAL_BUS_PARSER  SerBusParser;
 
 static ZIGBEE_STUR sZigbee;
 
+static uint8_t sZigbeeBuffer[256];
 
 void zb_Serial_InitParser(void)
 {
@@ -164,7 +166,7 @@ int zb_ParseMessage(uint8_t *pucData,int len)
  *
  * @return      TRUE if the downloaded code has been enabled; FALSE otherwise.
  */
-void zb_SerialResp(void)
+void zb_SerialResp(uint8_t* sbTxBuf)
 {
   uint8 fcs = 0, len = sbTxBuf[RPC_POS_LEN] + RPC_FRAME_HDR_SZ;
   uint8 idx;
@@ -183,13 +185,15 @@ void zb_SerialResp(void)
 
 void zbReset(void)
 {
+    uint8_t *sbTxBuf = sZigbeeBuffer + 1;
     sZigbee.ucInitReset = 0;
+    
 
     sbTxBuf[RPC_POS_LEN]  = 0; // no data
     sbTxBuf[RPC_POS_CMD0] = RPC_SYS_APP;
     sbTxBuf[RPC_POS_CMD1] = SAPP_CMD_RESET;
     
-    zb_SerialResp();
+    zb_SerialResp(sbTxBuf);
 
     Disp_zbResetInd();
 }
@@ -197,6 +201,7 @@ void zbReset(void)
 void zbPing(void)
 {
     unsigned char buf[8];
+    uint8_t *sbTxBuf = sZigbeeBuffer + 1;
 
     ZB_CMDITF_CMD_STRU *pCmd = NULL;       
     {
@@ -217,7 +222,7 @@ void zbPing(void)
 
     memcpy(&sbTxBuf[RPC_POS_DAT0], buf,sbTxBuf[RPC_POS_LEN]);
     
-    zb_SerialResp();
+    zb_SerialResp(sbTxBuf);
 
     sZigbee.ucHsTxCnt++;
 }
@@ -238,12 +243,13 @@ void zb_PrepareReset()
 void zbCanItf(uint8_t *pucData)
 {
     int len = pucData[RPC_POS_LEN] + RPC_FRAME_HDR_SZ;
+    uint8_t *sbTxBuf = sZigbeeBuffer + 1;
 
     memcpy(&sbTxBuf[RPC_POS_LEN],pucData,len);
 
     sbTxBuf[RPC_POS_CMD0] = RPC_SYS_BOOT;
 
-    zb_SerialResp();
+    zb_SerialResp(sbTxBuf);
 
 }
 
@@ -292,7 +298,7 @@ void zb_SapiProc(uint8_t *pucData,int len)
     }
 }
 
-uint8_t zb_AirDataProc(void)
+uint8_t zb_AirDataProc(uint8_t *sbRxBuf)
 {
     ZB_CMDITF_CMD_STRU *pCmd = (ZB_CMDITF_CMD_STRU *)&sbRxBuf[RPC_POS_DAT0];   
 
@@ -309,6 +315,8 @@ void zb_SappProc(uint8_t *pucData,int len)
 {
     uint8_t ucRet;
 
+    uint8_t sbRxBuf[256];
+
     switch(pucData[RPC_POS_CMD1])
     {
     case SAPP_CMD_DATA:
@@ -320,13 +328,13 @@ void zb_SappProc(uint8_t *pucData,int len)
 
             memcpy(&sbRxBuf[RPC_POS_DAT0],pucData + RPC_POS_DAT0 + 1,len - RPC_FRAME_HDR_SZ - 1);
             
-            ucRet = CanCcbAfProc(CAN_ZIGBEE_INDEX);
+            ucRet = CanCcbAfProc(CAN_ZIGBEE_INDEX,sbRxBuf);
         }
         break;
     case SAPP_CMD_AIR_DATA:
         {
             memcpy(sbRxBuf,pucData,len);
-            ucRet = zb_AirDataProc();
+            ucRet = zb_AirDataProc(sbRxBuf);
         }
         break;
     }
@@ -362,11 +370,6 @@ void zbSecondTask(void)
 
 void zb_ItfProcess(Message *pMsg)
 {
-
-#ifdef TESTER
-    MainAlarmWithDuration(1);
-#endif
-
     if (zb_ParseMessage((uint8_t *)pMsg->data,pMsg->msgHead.nMsgLen))
     {
        /* process frame */
