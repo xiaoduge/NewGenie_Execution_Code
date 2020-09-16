@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 *.crf
+*.dep
 
 # Object files
 *.o
@@ -12,6 +13,7 @@
 *.ilk
 *.map
 *.exp
+*.axf
 
 # Precompiled Headers
 *.gch
@@ -52,5 +54,9 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+*.htm
+*.xiaoduge
+
 # 忽略备份文件夹
 baseos_Code_old
+Temporary
