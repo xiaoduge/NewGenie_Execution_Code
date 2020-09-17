@@ -33,7 +33,7 @@ const char DataStr[]=__DATE__;
 const char TimeStr[]=__TIME__; 
 
 //const char version[] = {"STM32F103_PWEA_V1.0"};
-const char version[] = {"0.1.3.200408_93801"};
+const char version[] = {"0.1.3.200916_93801"};
 
 uint16_t gusDeviceId;
 

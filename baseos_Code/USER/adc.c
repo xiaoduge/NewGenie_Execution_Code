@@ -1,3 +1,4 @@
+#include <string.h>
 #include "stm32_eval.h"
 
 #include "Timer_Driver.h"
@@ -36,6 +37,20 @@ u16 ADC_ConvertedValue[ADC_Oversampling_NUM][CM_MAX_NUMBER];
 
 u32 ADC_Result[CM_MAX_NUMBER];
 
+#define ADC_SMOOTH_BITS (3)
+#define ADC_SMOOTH_NUM  (1 << ADC_SMOOTH_BITS)
+#define ADC_SMOOTH_MASK (ADC_SMOOTH_NUM - 1)
+
+typedef struct
+{
+    int aiStepVal[APP_EXE_INPUT_REG_LOOP_NUM][ADC_SMOOTH_NUM];
+    int aiSumVal[APP_EXE_INPUT_REG_LOOP_NUM];
+    int aiAveVal[APP_EXE_INPUT_REG_LOOP_NUM];
+    uint8_t  ucIdx;
+    uint8_t ucSteps;
+}ADC_STATISTIC_STRU;
+
+static ADC_STATISTIC_STRU sAdcStats;
 
 /*******************************************************************************
 * Function Name  : NVIC_Configuration
@@ -137,11 +152,13 @@ void ADC_Meas_Init(u32 Sampling_Period )
 
   NVIC_Configuration();
 
-  ADC_DMA_Configuration((u32)ADC_ConvertedValue,ADC_Oversampling_Factor,CM_MAX_NUMBER,ADC_SampleTime_15Cycles);
+  ADC_DMA_Configuration((u32)ADC_ConvertedValue,ADC_Oversampling_Factor,CM_MAX_NUMBER,ADC_SampleTime_28Cycles);
   
   ADC_SoftwareStartConv(ADC1);
   
   TIM2_Configuration(Sampling_Period);
+
+  memset(&sAdcStats,0,sizeof(sAdcStats));
     
 }
 
@@ -230,11 +247,25 @@ UINT8 PidAdcProcess(Message *pMsg)
         }
     }
 
+    if (sAdcStats.ucSteps < ADC_SMOOTH_NUM) sAdcStats.ucSteps++;
+
     for (ucLoop = 0; ucLoop < APP_EXE_INPUT_REG_LOOP_NUM; ucLoop++)
     {
-        Display.ausInputRegs[APP_EXE_INPUT_REG_LOOP_OFFSET + ucLoop] = GetAdcData(ucLoop);
-     }  
+        int iNextIdx = (sAdcStats.ucIdx+1)&ADC_SMOOTH_MASK;
+        int iAdcValue  = GetAdcData(ucLoop) ;
+
+        sAdcStats.aiSumVal[ucLoop]           -= sAdcStats.aiStepVal[ucLoop][iNextIdx];
+        sAdcStats.aiStepVal[ucLoop][iNextIdx] = iAdcValue;
+        sAdcStats.aiSumVal[ucLoop]           += iAdcValue;
+        sAdcStats.aiAveVal[ucLoop]            = sAdcStats.aiSumVal[ucLoop]/sAdcStats.ucSteps;
     
+        Display.ausInputRegs[APP_EXE_INPUT_REG_LOOP_OFFSET + ucLoop] = sAdcStats.aiAveVal[ucLoop];
+     }  
+     sAdcStats.ucIdx++;
+     if (sAdcStats.ucIdx >= ADC_SMOOTH_NUM)
+     {
+         sAdcStats.ucIdx   = 0;
+     }     
      return 0;
 }
 

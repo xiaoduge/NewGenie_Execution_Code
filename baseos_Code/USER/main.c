@@ -181,7 +181,7 @@ void  MainInit (void)
 
 
 #if (ADC_SUPPORT > 0)
-   ADC_Meas_Init(1000000);
+   ADC_Meas_Init(100000);
 #endif
 
     CanCmdInit();
